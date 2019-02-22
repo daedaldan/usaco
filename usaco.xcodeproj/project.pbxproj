@@ -6,10 +6,6 @@
 	objectVersion = 50;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		8486EC952220A0FF0099A4B4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8486EC942220A0FF0099A4B4 /* main.cpp */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		8486EC8F2220A0FF0099A4B4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -24,7 +20,6 @@
 
 /* Begin PBXFileReference section */
 		8486EC912220A0FF0099A4B4 /* usaco */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = usaco; sourceTree = BUILT_PRODUCTS_DIR; };
-		8486EC942220A0FF0099A4B4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +36,7 @@
 		8486EC882220A0FF0099A4B4 = {
 			isa = PBXGroup;
 			children = (
-				8486EC932220A0FF0099A4B4 /* usaco */,
+				8486EC9B2220A10C0099A4B4 /* February 2019 */,
 				8486EC922220A0FF0099A4B4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,12 +49,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8486EC932220A0FF0099A4B4 /* usaco */ = {
+		8486EC9B2220A10C0099A4B4 /* February 2019 */ = {
 			isa = PBXGroup;
 			children = (
-				8486EC942220A0FF0099A4B4 /* main.cpp */,
 			);
-			path = usaco;
+			path = "February 2019";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,7 +112,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8486EC952220A0FF0099A4B4 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
