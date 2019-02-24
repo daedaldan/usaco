@@ -6,6 +6,10 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		84DA225E2223461B004E943D /* sleepy_cow_herding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84DA225D2223461B004E943D /* sleepy_cow_herding.cpp */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		8486EC8F2220A0FF0099A4B4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +24,9 @@
 
 /* Begin PBXFileReference section */
 		8486EC912220A0FF0099A4B4 /* usaco */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = usaco; sourceTree = BUILT_PRODUCTS_DIR; };
+		84DA225D2223461B004E943D /* sleepy_cow_herding.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sleepy_cow_herding.cpp; sourceTree = "<group>"; };
+		84DA225F222347E1004E943D /* input1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = input1.txt; sourceTree = "<group>"; };
+		84DA2261222348CB004E943D /* output1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = output1.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +59,9 @@
 		8486EC9B2220A10C0099A4B4 /* February 2019 */ = {
 			isa = PBXGroup;
 			children = (
+				84DA225D2223461B004E943D /* sleepy_cow_herding.cpp */,
+				84DA225F222347E1004E943D /* input1.txt */,
+				84DA2261222348CB004E943D /* output1.txt */,
 			);
 			path = "February 2019";
 			sourceTree = "<group>";
@@ -112,6 +122,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84DA225E2223461B004E943D /* sleepy_cow_herding.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
