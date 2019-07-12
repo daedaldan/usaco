@@ -18,7 +18,7 @@ string daysToWeekday(int n, map<int, string> key) {
 
 
 int main() {
-	ifstream reader("input.txt");
+	ifstream reader("friday.in");
 	int years = -1;
 	string yearsStr = "yearsStr";
 	if (reader.is_open()) {
@@ -54,45 +54,46 @@ int main() {
 		if (i == 2000 || ((i % 4 == 0) && (i % 100 != 0))) {
 			thirteenths[daysToWeekday(days + 13, weekdayKey)] += 1;
 			thirteenths[daysToWeekday(days + 44, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 63, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 94, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 124, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 155, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 175, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 206, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 237, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 267, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 298, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 328, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 73, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 104, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 134, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 165, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 195, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 226, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 257, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 287, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 318, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 348, weekdayKey)] += 1;
 			days += 366;
 		} else {
 			thirteenths[daysToWeekday(days + 13, weekdayKey)] += 1;
 			thirteenths[daysToWeekday(days + 44, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 62, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 93, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 123, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 154, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 174, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 205, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 236, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 266, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 297, weekdayKey)] += 1;
-			thirteenths[daysToWeekday(days + 327, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 72, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 103, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 133, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 164, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 194, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 225, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 256, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 286, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 317, weekdayKey)] += 1;
+			thirteenths[daysToWeekday(days + 347, weekdayKey)] += 1;
 			days += 365;
 		}
 	}
 
-	cout << "Mon: " << thirteenths["Mon"] << " ";
-	cout << "Tue: " << thirteenths["Tue"] << " ";
-	cout << "Wed: " << thirteenths["Wed"] << " ";
-	cout << "Thu: " << thirteenths["Thu"] << " ";
-	cout << "Fri: " << thirteenths["Fri"] << " ";
-	cout << "Sat: " << thirteenths["Sat"] << " ";
-	cout << "Sun: " << thirteenths["Sun"] << " ";
+	// cout << "Sat: " << thirteenths["Sat"] << " ";
+	// cout << "Sun: " << thirteenths["Sun"] << " ";
+	// cout << "Mon: " << thirteenths["Mon"] << " ";
+	// cout << "Tue: " << thirteenths["Tue"] << " ";
+	// cout << "Wed: " << thirteenths["Wed"] << " ";
+	// cout << "Thu: " << thirteenths["Thu"] << " ";
+	// cout << "Fri: " << thirteenths["Fri"] << " ";
+	// correct answer: 36 33 34 33 35 35 34
 
-	ofstream writer("output.txt");
+	ofstream writer("friday.out");
 	if (writer.is_open()) {
-
+		writer << thirteenths["Sat"] << " " << thirteenths["Sun"] << " " << thirteenths["Mon"] << " " << thirteenths["Tue"] << " " << thirteenths["Wed"] << " " << thirteenths["Thu"] << " " << thirteenths["Fri"] << "\n";
 	} else {
 		cout << "error opening output file" << endl;
 	}
