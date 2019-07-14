@@ -77,8 +77,9 @@ int main() {
 			if (active > maxActivity) {
 				maxActivity = active;
 			}
+			i -= 1;
 		} else {
-			int idle = 1;
+			int idle = 0;
 			while (!activityLine[i]) {
 				idle += 1;
 				i++;
@@ -86,11 +87,8 @@ int main() {
 			if (idle > maxIdle) {
 				maxIdle = idle;
 			}
+			i -= 1;
 		}
-	}
-
-	if (maxIdle == 1) {
-		maxIdle = 0;
 	}
 
 	ofstream writer("milk2.out");
