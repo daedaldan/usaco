@@ -66,8 +66,7 @@ void createPossibleNames(map<char, vector<string>> & tt, vector<string> & names,
 			names.push_back(used + tt[remaining[0]][2]);
 		return;
 	}
-	if (used[0] == 'H')
-		cout << "used: " << used << " remaining: " << remaining << endl;
+	
 	for (int i = 0; i < 3; i++) {
 		createPossibleNames(tt, names, used + tt[remaining[0]][i], remaining.substr(1), dict);
 	}
