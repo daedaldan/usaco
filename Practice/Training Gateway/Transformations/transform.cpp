@@ -50,37 +50,12 @@ vector<vector<char>> rotateNinety(vector<vector<char>> sqr) {
 		}
 	} // scenario 2: square length is even
 	else {
-		// int bound = sqr.size() / 2;
-		// for (int i = -bound; i <= bound; i++) {
-		// 	if (i != 0) {
-		// 		cout << "i: " << i << " ";
-		// 		for (int j = -bound; j <= bound; j++) {
-		// 			if (j != 0) {
-		// 				cout << "j: " << j << endl;
-		// 				int newI = -10;
-		// 				int newJ = -10;
-		// 				// if (i < 0)
-		// 				// 	newI = i + bound;
-		// 				// else
-		// 				// 	newI = i + bound - 1;
-		// 				// if (j < 0)
-		// 				// 	newJ = j + bound;
-		// 				// else
-		// 				// 	newJ = j + bound - 1;
-		// 				// cout << "newI: " << newI << " " << "newJ: " << newJ << endl;
-		// 				if (i < 0 && j < 0) {
-		// 					newSqr[j + bound][-i + bound] = sqr[i + bound][j + bound];
-		// 				} else if (i > 0 && j > 0) {
-		// 					newSqr[newJ = j + bound - 1][-i + bound - 1] = sqr[i + bound - 1][newJ = j + bound - 1];
-		// 				} else if (i < 0 && j > 0) {
-		// 					newSqr[newJ = j + bound - 1][-i + bound] = sqr[i + bound][newJ = j + bound - 1];
-		// 				} else if (i > 0 && j < 0){
-		// 					newSqr[j + bound][-i + bound - 1] = sqr[i + bound - 1][j + bound];
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
+		int bound = sqr.size() / 2;
+		for (int i = 0; i < sqr.size(); i++) {
+			for (int j = 0; j < sqr.size(); j++) {
+				newSqr[j][-i+sqr.size()-1] = sqr[i][j];
+			}	
+		}
 	}
 
 	return newSqr;
@@ -106,7 +81,12 @@ vector<vector<char>> rotateOneEighty(vector<vector<char>> sqr) {
 		}
 	} // scenario 2: square length is even
 	else {
-
+		int bound = sqr.size() / 2;
+		for (int i = 0; i < sqr.size(); i++) {
+			for (int j = 0; j < sqr.size(); j++) {
+				newSqr[-i+sqr.size()-1][-j+sqr.size()-1] = sqr[i][j];
+			}	
+		}
 	}
 
 	return newSqr;
@@ -132,7 +112,12 @@ vector<vector<char>> rotateTwoSeventy(vector<vector<char>> sqr) {
 		}
 	} // scenario 2: square length is even
 	else {
-		
+		int bound = sqr.size() / 2;
+		for (int i = 0; i < sqr.size(); i++) {
+			for (int j = 0; j < sqr.size(); j++) {
+				newSqr[-j+sqr.size()-1][i] = sqr[i][j];
+			}	
+		}
 	}
 
 	return newSqr;
@@ -158,7 +143,15 @@ vector<vector<char>> reflectHoriz(vector<vector<char>> sqr) {
 		}
 	} // scenario 2: square length is even
 	else {
-
+		int bound = sqr.size() / 2;
+		for (int i = 0; i < sqr.size(); i++) {
+			for (int j = 0; j < sqr.size(); j++) {
+				if (i > 0)
+					newSqr[i][-j+sqr.size()-1] = sqr[i][j];
+				else
+					newSqr[i][-j+sqr.size()-1] = sqr[i][j];
+			}	
+		}
 	}
 
 	return newSqr;
@@ -212,15 +205,15 @@ int main() {
 	cout << endl;
 
 	// TEST: printing transformed original square to console
-	// origSquare = rotateNinety(origSquare);
-	cout << "Transformed Original Square:" << endl;
-	for (int i = 0; i < sizeSquare; i++) {
-		for (int j = 0; j < sizeSquare; j++) {
-			cout << origSquare[i][j];
-		}
-		cout << endl;
-	}
-	cout << endl;
+	// cout << "Transformed Original Square:" << endl;
+	// origSquare = rotateTwoSeventy(origSquare);
+	// for (int i = 0; i < sizeSquare; i++) {
+	// 	for (int j = 0; j < sizeSquare; j++) {
+	// 		cout << origSquare[i][j];
+	// 	}
+	// 	cout << endl;
+	// }
+	// cout << endl;
 
 	// printing transformed square to console
 	cout << "Transformed Square:" << endl;
@@ -262,7 +255,7 @@ int main() {
 		} else if (equalSquare(origSquare, transformSquare)) {
 			transformCase = 6;
 		} else {
-		transformCase = 7;
+			transformCase = 7;
 	 	}
 	} 
 
