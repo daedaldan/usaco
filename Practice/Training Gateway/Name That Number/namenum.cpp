@@ -56,17 +56,20 @@ void populateTouchTone(map<char, vector<string>> & tt) {
 	tt.insert({'9', nine});
 }
 
-void createPossibleNames(map<char, vector<string>> & tt, vector<string> & names, string used, string remaining) {
+void createPossibleNames(map<char, vector<string>> & tt, vector<string> & names, string used, string remaining, unordered_map<string, string> & dict) {
 	if (remaining.size() == 1) {
-		names.push_back(used + tt[remaining[0]][0]);
-		names.push_back(used + tt[remaining[0]][1]);
-		names.push_back(used + tt[remaining[0]][2]);
+		if (dict.find(used + tt[remaining[0]][0]) != dict.end())
+			names.push_back(used + tt[remaining[0]][0]);
+		if (dict.find(used + tt[remaining[0]][1]) != dict.end())
+			names.push_back(used + tt[remaining[0]][1]);
+		if (dict.find(used + tt[remaining[0]][2]) != dict.end())
+			names.push_back(used + tt[remaining[0]][2]);
 		return;
 	}
 	if (used[0] == 'H')
 		cout << "used: " << used << " remaining: " << remaining << endl;
 	for (int i = 0; i < 3; i++) {
-		createPossibleNames(tt, names, used + tt[remaining[0]][i], remaining.substr(1));
+		createPossibleNames(tt, names, used + tt[remaining[0]][i], remaining.substr(1), dict);
 	}
 }
 
@@ -99,19 +102,9 @@ int main() {
 	map<char, vector<string>> touchTone;
 	populateTouchTone(touchTone);
 
-	// creating vector of possible cow names based on number given
-	vector<string> possibleNames;
-	createPossibleNames(touchTone, possibleNames, "", cowNum);
-
-	// creating vector of valid cow names based on dict
+	// creating vector of valid cow names based on number given
 	vector<string> validNames;
-
-	for (int i = 0; i < possibleNames.size(); i++) {
-		if (dict.find(possibleNames[i]) != dict.end())
-			validNames.push_back(possibleNames[i]);
-	}
-
-	possibleNames.shrink_to_fit();
+	createPossibleNames(touchTone, validNames, "", cowNum, dict);
 
 	// writing output 
 	// ofstream writer("output.txt");
