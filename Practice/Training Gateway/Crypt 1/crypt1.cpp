@@ -35,7 +35,8 @@ void twoDigitPermutations(vector<string> & digits, vector<string> & permutations
 
 int main() {
 	// reading input
-	ifstream reader("input.txt");
+	// ifstream reader("input.txt");
+	ifstream reader("crypt1.in");
 	string strNumDigits;
 	string line2;
 	// number of possible digits
@@ -66,18 +67,16 @@ int main() {
 	vector<string> twoDigit;
 	twoDigitPermutations(strPossibleDigits, twoDigit, "");
 
-	// cout << 420 << endl;
+	vector<string> validThreeDigits;
+	vector<string> validTwoDigits;
+	int numValidPermutations = 0;
 
-	cout << threeDigit[0] << endl;
-	cout << twoDigit[0][1] << endl;
-	cout << stoi(threeDigit[0]) * stoi(to_string(twoDigit[0][1])) << endl;
-	cout << to_string(stoi(threeDigit[0]) * stoi(to_string(twoDigit[0][0]))) << endl;
 	// find valid permutations
 	for (int i = 0; i < threeDigit.size(); i++) {
 		for (int j = 0; j < twoDigit.size(); j++) {
 			bool validPerm = true;
-			string partialProduct1 = to_string(stoi(threeDigit[i]) * stoi(to_string(twoDigit[i][1])));
-			string partialProduct2 = to_string(stoi(threeDigit[i]) * stoi(to_string(twoDigit[i][0])));
+			string partialProduct1 = to_string(stoi(threeDigit[i]) * stoi(string(1, twoDigit[j][1])));
+			string partialProduct2 = to_string(stoi(threeDigit[i]) * stoi(string(1, twoDigit[j][0])));
 			string product = to_string(stoi(partialProduct1) + stoi(partialProduct2 + "0"));
 			if (partialProduct1.size() != 3)
 				validPerm = false;
@@ -86,27 +85,42 @@ int main() {
 			else if (product.size() != 4)
 				validPerm = false;
 			else {
-				cout << 420 << endl;
+				// check that all digits are from input set
 				for (int k = 0; k < product.size(); k++) {
-					if (find(strPossibleDigits.begin(), strPossibleDigits.end(), to_string(product[k])) == strPossibleDigits.end()) {
+					if (find(strPossibleDigits.begin(), strPossibleDigits.end(), string(1, product[k])) == strPossibleDigits.end()) {
+						validPerm = false;
+						break;
+					}
+				}
+				for (int k = 0; k < partialProduct1.size(); k++) {
+					if (find(strPossibleDigits.begin(), strPossibleDigits.end(), string(1, partialProduct1[k])) == strPossibleDigits.end()) {
+						validPerm = false;
+						break;
+					}
+				}
+				for (int k = 0; k < partialProduct2.size(); k++) {
+					if (find(strPossibleDigits.begin(), strPossibleDigits.end(), string(1, partialProduct2[k])) == strPossibleDigits.end()) {
 						validPerm = false;
 						break;
 					}
 				}
 			}
 			if (validPerm) {
-				cout << partialProduct1 << endl;
-				cout << partialProduct2 << endl;
-				cout << product << endl;
+				// check for duplicates
+				if (true) {
+					numValidPermutations += 1;
+					validThreeDigits.push_back(threeDigit[i]);
+					validTwoDigits.push_back(twoDigit[j]);
+				}
 			}
 		}
 	}
 
-
 	// writing output
-	ifstream writer("output.txt");
+	// ofstream writer("output.txt");
+	ofstream writer("crypt1.out");
 	if (writer.is_open()) {
-
+		writer << numValidPermutations << "\n";
 	} else {
 		cout << "error opening output file" << endl;
 	}
