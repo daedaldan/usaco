@@ -9,31 +9,18 @@ LANG: C++
 #include <fstream>
 #include <vector>
 #include <set>
+#include <cstdlib>
 
 using namespace std;
 
-void generateCombos(vector<int> a, vector<int> b, int range, set<vector<int>> & valid) {
-	for (int i = 0; i < 2; i++) {
-		for (int j = -2; j <= 2; j++) {
-			if (a[i] + j > range) {
-
-			} else if (a[i] + j < 0) {
-
-			} else {
-				a[i] += j;
-				valid.insert(a);
-			}
-
-			if (b[i] + j > range) {
-
-			} else if (b[i] + j < 0) {
-
-			} else {
-				b[i] += j;
-				valid.insert(b);
-			}
-		}
-	}
+bool close_enough(int a, int b, int range) {
+	if (abs(a-b) <= 2)
+		return true;
+	if (abs(a-range-b) <= 2)
+		return true;
+	if (abs(b-range-a) <= 2)
+		return true;
+	return false;
 }
 
 int main() {
@@ -44,7 +31,8 @@ int main() {
 	// vectors of ints with Farmer John's and master combination, respectively
 	vector<int> combo1;
 	vector<int> combo2;
-	ifstream reader("input.txt");
+	// ifstream reader("input.txt");
+	ifstream reader("combo.in");
 	if (reader.is_open()) {
 		getline(reader, strLockRange);
 		lockRange = stoi(strLockRange);
@@ -72,11 +60,59 @@ int main() {
 	reader.close();
 
 	set<vector<int>> validCombos;
+	vector<vector<int>> possibleCombos;
 
-	generateCombos(combo1, combo2, lockRange, validCombos);
+	for (int i = 1; i <= lockRange; i++) {
+		for (int j = 1; j <= lockRange; j++) {
+			for (int k = 1; k <= lockRange; k++) {
+				vector<int> combo;
+				combo.push_back(i);
+				combo.push_back(j);
+				combo.push_back(k);
+				possibleCombos.push_back(combo);
+			}
+		}
+	}
+
+	for (int i = 0; i < possibleCombos.size(); i++) {
+		bool close = true;
+		for (int j = 0; j < 3; j++) {
+			if (close_enough(possibleCombos[i][j], combo1[j], lockRange))
+				continue;
+			else {
+				close = false;
+				break;
+			} 
+		}
+		if (close) {
+			validCombos.insert(possibleCombos[i]);
+			for (int k = 0; k < 3; k++) 
+				cout << possibleCombos[i][k] << " ";
+			cout << endl;
+		}
+	}
+
+	for (int i = 0; i < possibleCombos.size(); i++) {
+		bool close = true;
+		for (int j = 0; j < 3; j++) {
+			if (close_enough(possibleCombos[i][j], combo2[j], lockRange))
+				continue;
+			else {
+				close = false;
+				break;
+			} 
+		}
+		if (close) {
+			validCombos.insert(possibleCombos[i]);
+			for (int k = 0; k < 3; k++) 
+				cout << possibleCombos[i][k] << " ";
+			cout << endl;
+		}
+	}
 
 	// writing output
-	ofstream writer("output.txt");
+	// ofstream writer("output.txt");
+	ofstream writer("combo.out");
 	if (writer.is_open()) {
 		writer << validCombos.size() << "\n";
 	} else {
