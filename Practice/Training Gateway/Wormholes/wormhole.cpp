@@ -8,6 +8,7 @@ LANG: C++
 #include <string>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -28,33 +29,27 @@ bool duplicateHoles(holePair a, holePair b) {
 		return false;
 	if (a.id2 == b.id1 || a.id1 == b.id2)
 		return false;
-		return false;
 
 	return true;
 }
 
-void calculateWormholePairs(vector<wormhole> & holes, vector<holePair> soFar, vector<vector<holePair>> & pairs) {
-	if (soFar.size() == (holes.size() / 2)) {
-		cout << "here " << endl;
+void calculateWormholePairs(vector<wormhole> holes, vector<holePair> soFar, vector<vector<holePair>> & pairs) {
+		if (holes.size() == 0) {
 		pairs.push_back(soFar);
-	}
-	
-	for (int i = 0; i < holes.size(); i++) {
-		for (int j = 0; j < holes.size(); j++) {
-			holePair p;
-			p.id1 = holes[i].id;
-			p.id2 = holes[j].id;
-			bool valid = true;
-			for (int k = 0; k < soFar.size(); k++) {
-				if (duplicateHoles(p, soFar[k])) {
-					valid = false;
-					break;
+	} else {
+		for (int i = 0; i < holes.size(); i++) {
+			for (int j = 0; j < holes.size(); j++) {
+				holePair p;
+				p.id1 = holes[i].id;
+				p.id2 = holes[j].id;
+				if (holes[i].id != holes[j].id && find(soFar.begin(), soFar.end(), p) == soFar.end()) {
+					soFar.push_back(p);
+					vector<wormhole> newHoles = holes;
+					newHoles.erase(find(holes.begin(), holes.end(), holes[i]), ++find(holes.begin(), holes.end(), holes[i]));
+					newHoles.erase(find(holes.begin(), holes.end(), holes[j]), ++find(holes.begin(), holes.end(), holes[j]));
+					calculateWormholePairs(newHoles, soFar, pairs);
 				}
 			}
-			if (valid) {
-				soFar.push_back(p);
-			}
-			calculateWormholePairs(holes, soFar, pairs);
 		}
 	}
 }
@@ -90,11 +85,13 @@ int main() {
 
 	calculateWormholePairs(wormholes, emptyholePairs, wormholePairs);
 	cout << wormholePairs.size() << endl;
-	// mark starting hole
-	// set current hole to starting hole
-	// if hole with same y value and greater x value, set current hole to that hole
-	// if that hole is the starting hole, there is a cycle
-	// repeat
+	for (int i = 0; i < wormholePairs.size(); i++) {
+		for (int j = 0; j < wormholePairs[i].size(); j++) {
+			int start = wormholePairs[i][j][0];
+			int current = start;
+			for (int k = 0)
+		}
+	}
 
 	// writing output
 	ofstream writer("output.txt");
