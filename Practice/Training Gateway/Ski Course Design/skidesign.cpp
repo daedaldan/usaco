@@ -7,39 +7,11 @@ LANG: C++
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <vector>
+#include <set>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
-
-int indexOf(int i, vector<int> v) {
-	vector<int>::iterator it = find(v.begin(), v.end(), i);
-	if (it == v.end()) {
-		return -1;
-	} else {
-		return distance(v.begin(), it);
-	}
-}
-
-int findMax(vector<int> v) {
-	int max = -1;
-	for (int i = 0; i < v.size(); i++) {
-		if (v[i] > max)
-			max = v[i];
-	}
-
-	return max;
-}
-
-int findMin(vector<int> v) {
-	int min = 1001;
-	for (int i = 0; i < v.size(); i++) {
-		if (v[i] < min)
-			min = v[i];
-	}
-	
-	return min;	
-}
 
 int main() {
 	// reading input
@@ -47,13 +19,13 @@ int main() {
 	// ifstream reader("skidesign.in");
 	string line;
 	int numHills;
-	vector<int> hillHeights;
+	multiset<int> hillHeights;
 	if (reader.is_open()) {
 		getline(reader, line);
 		numHills = stoi(line);
 		for (int i = 0; i < numHills; i++) {
 			getline(reader, line);
-			hillHeights.push_back(stoi(line));
+			hillHeights.insert(stoi(line));
 		}
 	} else {
 		cout << "error opening input file" << endl;
@@ -61,18 +33,22 @@ int main() {
 	reader.close();
 	
 
-	int max = *max_element(hillHeights.begin(), hillHeights.end());
-	int min = *min_element(hillHeights.begin(), hillHeights.end());
+	int max = *hillHeights.rbegin();
+	int min = *hillHeights.begin();
 	int cost = 0;
+	int count = 0;
 	while (max - min > 17) {
-		int needed = (max - min - 17) / 2;
+		int needed = ceil((max - min - 17) / 2.0);
 		cost += 2 * (needed * needed);
 
-		hillHeights[indexOf(max, hillHeights)] -= needed;
-		hillHeights[indexOf(min, hillHeights)] += needed;
+		hillHeights.erase(hillHeights.begin(), ++hillHeights.begin());
+		hillHeights.erase(--hillHeights.end(), hillHeights.end());
+		hillHeights.insert(max - needed);
+		hillHeights.insert(min + needed);
 
-		max = *max_element(hillHeights.begin(), hillHeights.end());
-		min = *min_element(hillHeights.begin(), hillHeights.end());
+		max = *hillHeights.rbegin();
+		min = *hillHeights.begin();
+		cout << hillHeights.size() << endl;
 	}
 
 	// writing output
