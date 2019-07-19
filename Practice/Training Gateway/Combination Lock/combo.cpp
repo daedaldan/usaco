@@ -60,7 +60,6 @@ int main() {
 	reader.close();
 
 	set<vector<int>> validCombos;
-	vector<vector<int>> possibleCombos;
 
 	for (int i = 1; i <= lockRange; i++) {
 		for (int j = 1; j <= lockRange; j++) {
@@ -69,44 +68,29 @@ int main() {
 				combo.push_back(i);
 				combo.push_back(j);
 				combo.push_back(k);
-				possibleCombos.push_back(combo);
+				bool close = true;
+				for (int j = 0; j < 3; j++) {
+					if (close_enough(combo[j], combo1[j], lockRange))
+						continue;
+					else {
+						close = false;
+						break;
+					} 
+				}
+				if (close)
+					validCombos.insert(combo);
+				close = true;
+				for (int j = 0; j < 3; j++) {
+					if (close_enough(combo[j], combo2[j], lockRange))
+						continue;
+					else {
+						close = false;
+						break;
+					} 
+				}
+				if (close)
+					validCombos.insert(combo);
 			}
-		}
-	}
-
-	for (int i = 0; i < possibleCombos.size(); i++) {
-		bool close = true;
-		for (int j = 0; j < 3; j++) {
-			if (close_enough(possibleCombos[i][j], combo1[j], lockRange))
-				continue;
-			else {
-				close = false;
-				break;
-			} 
-		}
-		if (close) {
-			validCombos.insert(possibleCombos[i]);
-			for (int k = 0; k < 3; k++) 
-				cout << possibleCombos[i][k] << " ";
-			cout << endl;
-		}
-	}
-
-	for (int i = 0; i < possibleCombos.size(); i++) {
-		bool close = true;
-		for (int j = 0; j < 3; j++) {
-			if (close_enough(possibleCombos[i][j], combo2[j], lockRange))
-				continue;
-			else {
-				close = false;
-				break;
-			} 
-		}
-		if (close) {
-			validCombos.insert(possibleCombos[i]);
-			for (int k = 0; k < 3; k++) 
-				cout << possibleCombos[i][k] << " ";
-			cout << endl;
 		}
 	}
 
