@@ -23,6 +23,9 @@ struct holePair {
 	int id2;
 };
 
+bool operator==(const holePair & p1, const holePair & p2) {return p1.id1 == p2.id1 && p1.id2 == p2.id2;}
+bool operator==(const wormhole & wh1, const wormhole & wh2) {return wh1.id == wh2.id;}
+
 // returns true if input holePairs contain duplicate wormholes
 bool duplicateHoles(holePair a, holePair b) {
 	if (a.id1 == b.id1 || a.id2 == b.id2)
@@ -34,15 +37,17 @@ bool duplicateHoles(holePair a, holePair b) {
 }
 
 void calculateWormholePairs(vector<wormhole> holes, vector<holePair> soFar, vector<vector<holePair>> & pairs) {
-		if (holes.size() == 0) {
+	if (holes.size() == 0) {
 		pairs.push_back(soFar);
 	} else {
 		for (int i = 0; i < holes.size(); i++) {
 			for (int j = 0; j < holes.size(); j++) {
+				cout << "here" << endl;
 				holePair p;
 				p.id1 = holes[i].id;
 				p.id2 = holes[j].id;
 				if (holes[i].id != holes[j].id && find(soFar.begin(), soFar.end(), p) == soFar.end()) {
+					cout << "hi" << endl;
 					soFar.push_back(p);
 					vector<wormhole> newHoles = holes;
 					newHoles.erase(find(holes.begin(), holes.end(), holes[i]), ++find(holes.begin(), holes.end(), holes[i]));
@@ -59,6 +64,7 @@ void calculateWormholePairs(vector<wormhole> holes, vector<holePair> soFar, vect
 int main() {
 	// reading input
 	ifstream reader("input.txt");
+	// ifstream reader("wormhole.in");
 	string line;
 	int numHoles;
 	vector<wormhole> wormholes;
@@ -84,17 +90,18 @@ int main() {
 	vector<holePair> emptyholePairs;
 
 	calculateWormholePairs(wormholes, emptyholePairs, wormholePairs);
-	cout << wormholePairs.size() << endl;
-	for (int i = 0; i < wormholePairs.size(); i++) {
-		for (int j = 0; j < wormholePairs[i].size(); j++) {
-			int start = wormholePairs[i][j][0];
-			int current = start;
-			for (int k = 0)
-		}
-	}
+	cout << wormholePairs.size() << "a" << endl;
+	// for (int i = 0; i < wormholePairs.size(); i++) {
+	// 	for (int j = 0; j < wormholePairs[i].size(); j++) {
+	// 		int start = wormholePairs[i][j][0];
+	// 		int current = start;
+	// 		for (int k = 0)
+	// 	}
+	// }
 
 	// writing output
 	ofstream writer("output.txt");
+	// ofstream writer("wormhole.out");
 	if (writer.is_open()) {
 
 	} else {
