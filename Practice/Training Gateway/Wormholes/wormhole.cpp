@@ -18,12 +18,6 @@ struct wormhole {
 	int id;
 };
 
-struct holePair {
-	int id1;
-	int id2;
-};
-
-bool operator==(const holePair & p1, const holePair & p2) {return p1.id1 == p2.id1 && p1.id2 == p2.id2;}
 bool operator==(const wormhole & wh1, const wormhole & wh2) {return wh1.id == wh2.id;}
 
 bool noExistingPair(vector<vector<vector<int>>> & pairSets, vector<int> p) {
@@ -69,8 +63,20 @@ void generateUniquePairs(vector<vector<vector<int>>> & pairSets, vector<vector<i
 	}	
 }
 
-bool isCycle(vector<vector<int>> & pairs) {
+bool isCycle(vector<int> starting, vector<int> current, vector<vector<int>> & pairs, vector<wormhole> & holes) {
+	if ((starting[0] == current[0] && starting[1] == current[1]) || (starting[0] == current[1] && starting[1] == current[0])) {
+		return true;
+	}
 
+	for (int i = 0; i < pairs.size(); i++) {
+		if ((holes[pairs[i][0]].x > holes[current[0]].x && holes[current[0]].y == holes[pairs[i][0]].y) || 
+			(holes[pairs[i][1]].x > holes[current[0]].x && holes[current[0]].y == holes[pairs[i][1]].y) ||
+			(holes[pairs[i][0]].x > holes[current[1]].x && holes[current[1]].y == holes[pairs[i][0]].y) ||
+			(holes[pairs[i][1]].x > holes[current[1]].x && holes[current[1]].y == holes[pairs[i][1]].y))
+			return isCycle(starting, pairs[i], pairs, holes);
+	}
+
+	return false;
 }
 
 
@@ -120,6 +126,12 @@ int main() {
 		}
 	}
 
+
+	vector<int> empPair;
+	empPair.push_back(-1);
+	empPair.push_back(-1);
+	if (isCycle(pairSets[0][0], empPair, pairSets[0], wormholes))
+		cout << "True" << endl;
 
 	// writing output
 	ofstream writer("output.txt");
