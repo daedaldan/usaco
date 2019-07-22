@@ -26,46 +26,53 @@ struct holePair {
 bool operator==(const holePair & p1, const holePair & p2) {return p1.id1 == p2.id1 && p1.id2 == p2.id2;}
 bool operator==(const wormhole & wh1, const wormhole & wh2) {return wh1.id == wh2.id;}
 
-// returns true if input holePairs contain duplicate wormholes
-bool duplicateHoles(holePair a, holePair b) {
-	if (a.id1 == b.id1 || a.id2 == b.id2)
-		return false;
-	if (a.id2 == b.id1 || a.id1 == b.id2)
-		return false;
+bool noExistingPair(vector<vector<vector<int>>> & pairSets, vector<int> p) {
+	for (int i = 0; i < pairSets.size(); i++) {
+		for (int j = 0; j < pairSets[i].size(); j++) {
+			if ((pairSets[i][j][0] == p[0] && pairSets[i][j][1] == p[1]) || (pairSets[i][j][0] == p[1] && pairSets[i][j][1] == p[0]))
+				return false;
+		}
+	}
 
 	return true;
 }
 
-void calculateWormholePairs(vector<wormhole> holes, vector<holePair> soFar, vector<vector<holePair>> & pairs, int depth) {
-	cout << "depth: " << depth << endl;
-	cout << "holes size: " << holes.size() << endl;
-	cout << "soFar size: " << soFar.size() << endl;
-	if (holes.size() == 0) {
-		pairs.push_back(soFar);
-	} else {
-		for (int i = 0; i < holes.size(); i++) {
-			for (int j = 0; j < holes.size(); j++) {
-				cout << "hole #" << holes[i].id << " and hole #" << holes[j].id << " (i = " << i << " and j = " << j << ")" << endl;
-				holePair p;
-				p.id1 = holes[i].id;
-				p.id2 = holes[j].id;
-				if (holes[i].id != holes[j].id && find(soFar.begin(), soFar.end(), p) == soFar.end()) {
-					cout << " are valid" << endl;
-					cout << depth << " here" << endl;
-					soFar.push_back(p);
-					// cout << depth << " here" << endl;
-					vector<wormhole> newHoles = holes;
-
-					newHoles.erase(find(holes.begin(), holes.end(), holes[i]), ++find(holes.begin(), holes.end(), holes[i]));
-					newHoles.erase(find(holes.begin(), holes.end(), holes[j]), ++find(holes.begin(), holes.end(), holes[j]));
-					calculateWormholePairs(newHoles, soFar, pairs, ++depth);
-				}
-			}
+void generateUniquePairs(vector<vector<vector<int>>> & pairSets, vector<vector<int>> & pairs, vector<int> remaining, vector<int> pair) {
+	if (pair.size() == 2) {
+		// cout << "here" << endl;
+		// cout << pair[0] << " " << pair[1] << endl;
+		if (noExistingPair(pairSets, pair)) {
+			// cout << "made it" << endl;
+			pairs.push_back(pair);
 		}
-	}
+	} else {
+		for (int i = 0; i < remaining.size(); i++) {
+			for (int j = 0; j < remaining.size(); j++) {
+				// cout << remaining[i] << " " << remaining[j] << endl;
+				// cout << "    " << i << " " << j << endl;
+				if (i != j) {
+					// cout << "here" << endl;
+					pair.push_back(remaining[i]);
+					pair.push_back(remaining[j]);
+					if (noExistingPair(pairSets, pair)) {
+						remaining.erase(remaining.begin() + i);
+						if (i < j)
+							remaining.erase(remaining.begin() + j - 1);
+						else
+							remaining.erase(remaining.begin() + j);
+					}	
+					generateUniquePairs(pairSets, pairs, remaining, pair);
+					pair.clear();
+				}
+			}	
+		}
+	}	
 }
 
-// bool isCycle()
+bool isCycle(vector<vector<int>> & pairs) {
+
+}
+
 
 int main() {
 	// reading input
@@ -90,44 +97,29 @@ int main() {
 	}
 	reader.close();
 
-	// calculate set of unique holePairs
-	vector<vector<holePair>> wormholePairs;
+	vector<int> ids;
+	for (int i = 0; i < wormholes.size(); i++)
+		ids.push_back(wormholes[i].id);
 
-	while (wormholePairs.size() < (wormholes.size() * (wormholes.size() - 1)) / 2) {
-		vector<wormhole> holes = wormholes;
-		vector<holePair> holePairs;
-		while (holes.size() != 0) {
-			for (int i = 0; i < holes.size(); i++) {
-				for (int j = 0; j < holes.size(); j++) {
-					holePair p;
-					p.id1 = holes[i].id;
-					p.id2 = holes[j].id;
-					if (holes[i].id != holes[j].id && find(holePairs.begin(), holePairs.end(), p) == holePairs.end()) {
-						holePairs.push_back(p);
-						holes.erase(find(holes.begin(), holes.end(), holes[i]), ++find(holes.begin(), holes.end(), holes[i]));
-						holes.erase(find(holes.begin(), holes.end(), holes[j]), ++find(holes.begin(), holes.end(), holes[j]));
-					}
-				}
-			}
-		}
-		wormholePairs.push_back(holePairs);
+	vector<vector<vector<int>>> pairSets;
+	vector<int> emptyPair;
+	while (pairSets.size() < (wormholes.size() * (wormholes.size() - 1)) / 4) {
+		vector<vector<int>> pairs;
+		generateUniquePairs(pairSets, pairs, ids, emptyPair);
+		pairSets.push_back(pairs);
 	}
+	
 
-	for (int i = 0 ; i < wormholePairs.size(); i++) {
-		cout << "Set " << i << ":" << endl;
-		for (int j = 0; j < wormholePairs[i].size(); j++) {
-			cout << "Pair " << j << ":" << endl;
-			cout << wormholePairs[i][j].id1 << ", " << wormholePairs[i][j].id2 << endl;
+	cout << pairSets.size() << endl;
+
+	// calculate set of unique pairings of wormholes
+	for (int i = 0; i < pairSets.size(); i++) {
+		cout << "Set: " << i + 1 << endl;
+ 		for (int j = 0; j < pairSets[i].size(); j++) {
+			cout << "    " << pairSets[i][j][0] << " " << pairSets[i][j][1] << endl;
 		}
 	}
-	cout << wormholePairs.size() << endl;
-	// for (int i = 0; i < wormholePairs.size(); i++) {
-	// 	for (int j = 0; j < wormholePairs[i].size(); j++) {
-	// 		int start = wormholePairs[i][j][0];
-	// 		int current = start;
-	// 		for (int k = 0)
-	// 	}
-	// }
+
 
 	// writing output
 	ofstream writer("output.txt");
