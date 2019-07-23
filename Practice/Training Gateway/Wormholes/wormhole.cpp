@@ -27,6 +27,7 @@ bool noExistingPair(vector<vector<vector<int>>> & pairSets, vector<int> p) {
 				return false;
 		}
 	}
+	
 
 	return true;
 }
@@ -63,19 +64,28 @@ void generateUniquePairs(vector<vector<vector<int>>> & pairSets, vector<vector<i
 	}	
 }
 
-bool isCycle(vector<int> starting, vector<int> current, vector<vector<int>> & pairs, vector<wormhole> & holes) {
-	if ((starting[0] == current[0] && starting[1] == current[1]) || (starting[0] == current[1] && starting[1] == current[0])) {
+bool isCycle(vector<int> & starting, vector<int> current, vector<vector<int>> & pairs, vector<wormhole> & holes, bool & start, int & count) {
+	count += 1;
+	if (count > 100000000)
+		return false;
+	if (((starting[0] == current[0] && starting[1] == current[1]) || (starting[0] == current[1] && starting[1] == current[0])) && !start) {
+		// cout << "here" << endl;
 		return true;
+		// cout << "true" << endl;
 	}
-
+	// cout << "here" << endl;
+	start = false;
 	for (int i = 0; i < pairs.size(); i++) {
-		if ((holes[pairs[i][0]].x > holes[current[0]].x && holes[current[0]].y == holes[pairs[i][0]].y) || 
-			(holes[pairs[i][1]].x > holes[current[0]].x && holes[current[0]].y == holes[pairs[i][1]].y) ||
-			(holes[pairs[i][0]].x > holes[current[1]].x && holes[current[1]].y == holes[pairs[i][0]].y) ||
-			(holes[pairs[i][1]].x > holes[current[1]].x && holes[current[1]].y == holes[pairs[i][1]].y))
-			return isCycle(starting, pairs[i], pairs, holes);
+		for (int cur = 0; cur <= 2; cur++) {
+			for (int next = 0; next <= 2; next++) {
+				// cout << "current: " << (holes[current[cur]]).x << " " << (holes[current[cur]]).y << endl;
+				if ((holes[current[cur]]).x < (holes[pairs[i][next]]).x && (holes[current[cur]]).y == (holes[pairs[i][next]]).y) {
+					return isCycle(starting, pairs[i], pairs, holes, start, count);
+				}
+			}
+		}
 	}
-
+	// cout << "false" << endl;
 	return false;
 }
 
@@ -116,28 +126,46 @@ int main() {
 	}
 	
 
-	cout << pairSets.size() << endl;
+	// cout << pairSets.size() << endl;
 
 	// calculate set of unique pairings of wormholes
-	for (int i = 0; i < pairSets.size(); i++) {
-		cout << "Set: " << i + 1 << endl;
- 		for (int j = 0; j < pairSets[i].size(); j++) {
-			cout << "    " << pairSets[i][j][0] << " " << pairSets[i][j][1] << endl;
-		}
-	}
+	// for (int i = 0; i < pairSets.size(); i++) {
+	// 	cout << "Set: " << i + 1 << endl;
+ // 		for (int j = 0; j < pairSets[i].size(); j++) {
+	// 		cout << "    " << pairSets[i][j][0] << " " << pairSets[i][j][1] << endl;
+	// 	}
+	// }
 
 
 	vector<int> empPair;
-	empPair.push_back(-1);
-	empPair.push_back(-1);
-	if (isCycle(pairSets[0][0], empPair, pairSets[0], wormholes))
-		cout << "True" << endl;
+	empPair.push_back(1001);
+	empPair.push_back(1001);
+	bool start = true;
+	int count = 0;
+// cout << "here" << endl;
+	int cycles = 0;
+	for (int i = 0; i < pairSets.size(); i++) {
+		// cout << "yo wassup" << endl;
+		for (int j = 0; j < pairSets[i].size(); j++) {
+			// cout << "j: " << j << endl;
+			// cout << "set: " << i + 1 << endl;
+			cout << cycles << endl;
+			if (isCycle(pairSets[i][j], empPair, pairSets[i], wormholes, start, count)) {
+				// cout << "made it" << endl;
+				cycles += 1;
+			}
+		}
+
+	}
+
+	cout << cycles << endl;
 
 	// writing output
 	ofstream writer("output.txt");
 	// ofstream writer("wormhole.out");
 	if (writer.is_open()) {
-
+		cout << "made it to output" << endl;
+		writer << cycles << "\n";
 	} else {
 		cout << "error opening output file" << endl;
 	}
