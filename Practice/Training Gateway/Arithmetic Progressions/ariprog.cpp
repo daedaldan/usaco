@@ -8,15 +8,30 @@ LANG: C++
 #include <fstream>
 #include <string>
 #include <set>
+#include <algorithm>
 
 using namespace std;
+
+struct ariProg {
+    int start;
+    int step;
+};
 
 int N, M = -1;
 set<int> bisquaresSet;
 int bisquares[62500];
 int bisquaresIndex = 0;
-int ariProgs[10000][2];
+ariProg ariProgs[10000];
 int ariProgIndex = 0;
+
+bool compareAriProgs(ariProg prog1, ariProg prog2) {
+    if (prog1.step < prog2.step)
+        return true;
+    else if (prog1.step == prog2.step && prog1.start < prog2.start)
+        return true;
+    else
+        return false;
+}
 
 void initBisquares() {
 	for (int p = 0; p <= M; p++)
@@ -24,22 +39,25 @@ void initBisquares() {
 			bisquaresSet.insert(p*p + q*q);
 }
 
-int sumBefore(int i) {
-	int sum = 0;
-	for (int j = i; j >= 1; j--)
-		sum += j;
-	return sum;
+bool search(int a, int b) {
+    for (int i = 0; i < N-1; i++) {
+        if (bisquaresSet.find(a+b) == bisquaresSet.end())
+            return false;
+        a = a+b;
+    }
+
+    return true;
 }
 
 void findProgs() {
 	for (int a = 0; a < bisquaresIndex; a++) {
-		for (int b = 0; b < bisquaresIndex; b++) {
-			for (int total = 0; total < bisquaresIndex; total++) {
-				if ((bisquares[a] * N + bisquares[b] * sumBefore(N)) == bisquares[total]) {
-					ariProgs[ariProgIndex][0] = a;
-					ariProgs[ariProgIndex][1] = b;
-					ariProgIndex++;
-				}
+		for (int b = a+1; b < bisquaresIndex-1; b++) {
+			if (search(bisquares[a], bisquares[b]-bisquares[a])) {
+			    ariProg ap;
+			    ap.start = bisquares[a];
+			    ap.step = bisquares[b]-bisquares[a];
+                ariProgs[ariProgIndex] = ap;
+                ariProgIndex++;
 			}
 		}
 	}
@@ -58,19 +76,20 @@ int main() {
 	initBisquares();
 	set<int>::iterator it;
 	for (it = bisquaresSet.begin(); it != bisquaresSet.end(); ++it) {
-		bisquares[bisquaresIndex] = *it;
-		bisquaresIndex++;
-	}
-
-	for (int i = 0; i < bisquaresIndex; i++)
-		cout << bisquares[i] << endl;
+        bisquares[bisquaresIndex] = *it;
+        bisquaresIndex++;
+    }
 
 	findProgs();
 
+	sort(ariProgs, ariProgs+ariProgIndex, compareAriProgs);
+
 	ofstream fout("ariprog.out");
 	if (fout.is_open()) {
+	    if (ariProgIndex == 0)
+	        fout << "NONE\n";
 		for (int i = 0; i < ariProgIndex; i++)
-			fout << ariProgs[i][0] << " " << ariProgs[i][1] << "\n";
+			fout << ariProgs[i].start << " " << ariProgs[i].step << "\n";
 	} else {
 		cout << "error opening output file" << endl;
 	}
