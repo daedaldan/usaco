@@ -50,7 +50,9 @@ bool search(int a, int b) {
 }
 
 void findProgs() {
+    cout << bisquaresIndex << " bisquares" << endl;
 	for (int a = 0; a < bisquaresIndex; a++) {
+	    cout << bisquares[a] << endl;
 		for (int b = a+1; b < bisquaresIndex-1; b++) {
 			if (search(bisquares[a], bisquares[b]-bisquares[a])) {
 			    ariProg ap;
@@ -79,6 +81,8 @@ int main() {
         bisquares[bisquaresIndex] = *it;
         bisquaresIndex++;
     }
+
+	cout << "initialized bisquares" << endl;
 
 	findProgs();
 
