@@ -17,6 +17,14 @@ struct bucket {
     int size;
 };
 
+bool operator==(const bucket & a, const bucket & b) {
+    return (a.milk == b.milk && a.size == b.size);
+}
+
+bool operator<(const bucket & a, const bucket & b) {
+    return a.milk < b.milk;
+}
+
 int A, B, C = 0;
 set<int> solutions;
 set<vector<bucket>> pastStates;
@@ -29,6 +37,22 @@ void pour(bucket & a, bucket & b) {
     }
 }
 
+bool state_find(set<vector<bucket>> & states, vector<bucket> & state) {
+    set<vector<bucket>>::iterator it;
+    for (it = states.begin(); it != states.end(); ++it) {
+        bool found = false;
+        for (int i = 0; i < 3; i++) {
+            if ((*it)[i].milk == state[i].milk && (*it)[i].size == state[i].size)
+                found = true;
+            else
+                found = false;
+        }
+        if (found == true)
+            return true;
+    }
+    return false;
+}
+
 void solve(vector<bucket> state) {
     // find non-empty buckets
     for (int i = 0; i < state.size(); i++) {
@@ -36,16 +60,20 @@ void solve(vector<bucket> state) {
             // for other buckets
             for (int j = 0; j < state.size(); j++) {
                 if (i != j) {
-                    pour(state[i], state[j]);
 
-                    if (state[0].milk == 0)
+                    if (state[0].milk == 0) {
                         solutions.insert(state[2].milk);
-                    if (state in pastStates)
+                        cout << state[2].milk << endl;
+                        pour(state[i], state[j]);
+                        solve(state);
+                    }
+                    if (!state_find(pastStates, state)) {
+                        pastStates.insert(state);
+                        pour(state[i], state[j]);
+                        solve(state);
+                    } else
                         return;
-                    else
-                        pastStates.add(state);
-
-                    solve(state);
+//                    solve(state);
                 }
             }
         }
@@ -74,7 +102,7 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-
+    solve(buckets);
 
     ofstream fout("milk3.out");
     if (fout.is_open()) {
