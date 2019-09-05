@@ -47,16 +47,15 @@ bool search(int a, int b) {
             return false;
         a = a+b;
     }
-    cout << a << endl;
+
     return true;
 }
 
 void findProgs() {
     cout << bisquaresIndex << " bisquares" << endl;
     for (int a = 0; a < bisquaresIndex; a++) {
-//        if (bisquares[a] > 12000) cout << bisquares[a] << endl;
+        cout << bisquares[a] << endl;
         for (int b = a+1; b < bisquaresIndex-1; b++) {
-            if (bisquares[b] - bisquares[a] > 5000) continue;
             if (search(bisquares[a], bisquares[b]-bisquares[a])) {
                 ariProg ap;
                 ap.start = bisquares[a];
