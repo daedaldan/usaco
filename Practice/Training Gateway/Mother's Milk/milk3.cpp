@@ -27,7 +27,6 @@ bool operator<(const bucket & a, const bucket & b) {
 
 int A, B, C = 0;
 set<int> solutions;
-set<vector<bucket>> pastStates;
 vector<bucket> buckets;
 
 void pour(bucket & a, bucket & b) {
@@ -47,33 +46,70 @@ bool state_find(set<vector<bucket>> & states, vector<bucket> & state) {
             else
                 found = false;
         }
-        if (found == true)
+        if (found)
             return true;
     }
     return false;
 }
 
-void solve(vector<bucket> state) {
+void solve(vector<bucket> state, set<vector<bucket>> past, int depth) {
     // find non-empty buckets
     for (int i = 0; i < state.size(); i++) {
         if (state[i].milk > 0) {
             // for other buckets
             for (int j = 0; j < state.size(); j++) {
+//                bucket ij1;
+//                bucket ij2;
+//                ij1.size = -1;
+//                ij1.milk = i;
+//                ij2.size = -1;
+//                ij2.milk = j;
+//                state.push_back(ij1);
+//                state.push_back(ij2);
+//                if (depth == 0 && j == 1) cout << "          HEREEEEE" << endl;
                 if (i != j) {
-
+//                    cout << "depth: " << depth << endl;
+//                    cout << state[0].milk << ", " << state[0].size << " | ";
+//                    cout << state[1].milk << ", " << state[1].size << " | ";
+//                    cout << state[2].milk << ", " << state[2].size << " | ";
+//                    cout << endl;
+//                    cout << "using buckets: " << i << ", " << j << endl;
+//                    if ((state[0].milk == 8 && state[1].milk == 1 && state[2].milk == 1) && i == 0 && j == 2)
+//                        cout << i << " " << j << endl;
+                    // if A is empty, save the solution and adjust
                     if (state[0].milk == 0) {
+//                        if ((state[0].milk == 8 && state[1].milk == 1 && state[2].milk == 1) && i == 0 && j == 2)
+//                            cout << 234 << endl;
                         solutions.insert(state[2].milk);
-                        cout << state[2].milk << endl;
-                        pour(state[i], state[j]);
-                        solve(state);
+//                        cout << "solution: " << state[2].milk << endl;
+                        vector<bucket> newState;
+                        for (int k = 0; k < 3; k++) {
+                            bucket a;
+                            a.milk = state[k].milk;
+                            a.size = state[k].size;
+                            newState.push_back(a);
+                        }
+                        pour(newState[i], newState[j]);
+                        solve(newState, past, ++depth);
+                    } // if this state has not been found before, save it (to prevent infinite loops)
+                    if (!state_find(past, state)) {
+//                        if ((state[0].milk == 8 && state[1].milk == 1 && state[2].milk == 1) && i == 0 && j == 2)
+//                            cout << 234 << endl;
+                        past.insert(state);
+                        vector<bucket> newState;
+                        for (int k = 0; k < 3; k++) {
+                            bucket a;
+                            a.milk = state[k].milk;
+                            a.size = state[k].size;
+                            newState.push_back(a);
+                        }
+                        pour(newState[i], newState[j]);
+                        solve(newState, past, ++depth);
+                    } else {
+                        if (depth == 0)
+                            cout << "HEREEEE" << endl;
+                        break;
                     }
-                    if (!state_find(pastStates, state)) {
-                        pastStates.insert(state);
-                        pour(state[i], state[j]);
-                        solve(state);
-                    } else
-                        return;
-//                    solve(state);
                 }
             }
         }
@@ -102,7 +138,8 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    solve(buckets);
+    set<vector<bucket>> pastStates;
+    solve(buckets, pastStates, 0);
 
     ofstream fout("milk3.out");
     if (fout.is_open()) {
