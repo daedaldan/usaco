@@ -8,18 +8,19 @@ LANG: C++
 #include <fstream>
 #include <string>
 #include <vector>
-#include <math.h>
+#include <algorithm>
 
 using namespace std;
 
 int A, B;
 int numPalindromes;
-int palindromes[100000000];
-vector<int> solutions;
+int palindromes[11200];
+int solutions[500];
+int numSolutions;
 
 bool is_prime(int a) {
-    if (a <= 3)
-        return a > 1;
+    if (a < 5)
+        return false;
     else if (a % 2 == 0 || a % 3 == 0)
         return false;
 
@@ -43,41 +44,34 @@ bool is_palindrome(string s) {
 }
 
 void generate_palindromes() {
-        for (int d1 = 1; d1 <= 9; d1 += 2) {
-            palindromes[numPalindromes] = d1;
+    for (int d1 = 1; d1 <= 9; d1 += 2) {
+        palindromes[numPalindromes] = d1;
+        numPalindromes++;
+        palindromes[numPalindromes] = d1 * 10 + d1;
+        numPalindromes++;
+        for (int d2 = 0; d2 <= 9; d2++) {
+            palindromes[numPalindromes] = d1 * 100 + d2 * 10 + d1;
             numPalindromes++;
-            for (int d2 = 0; d2 <= 9; d2++) {
-                palindromes[numPalindromes] = d2*10 + d1;
+            palindromes[numPalindromes] = d1 * 1000 + d2 * 100 + d2 * 10 + d1;
+            numPalindromes++;
+            for (int d3 = 0; d3 <= 9; d3++) {
+                palindromes[numPalindromes] = d1 * 10000 + d2 * 1000 + d3 * 100 + d2 * 10 + d1;
                 numPalindromes++;
-                for (int d3 = 0; d3 <= 9; d3++) {
-                    palindromes[numPalindromes] = d3* 100 + d2*10 + d1;
+                palindromes[numPalindromes] = d1 * 100000 + d2 * 10000 + d3 * 1000 + d3 * 100 + d2 * 10 + d1;
+                numPalindromes++;
+                for (int d4 = 0; d4 <= 9; d4++) {
+                    palindromes[numPalindromes] = d1 * 1000000 + d2 * 100000 + d3 * 10000 + d4 * 1000 + d3 * 100 + d2 * 10 + d1;
                     numPalindromes++;
-                    for (int d4 = 0; d4 <= 9; d4++) {
-                        palindromes[numPalindromes] = d4*1000 + d3* 100 + d2*10 + d1;
-                        numPalindromes++;
-                        for (int d5 = 0; d5 <= 9; d5++) {
-                            palindromes[numPalindromes] = d5*10000 + d4*1000 + d3* 100 + d2*10 + d1;
-                            numPalindromes++;
-                            for (int d6 = 0; d6 <= 9; d6++) {
-                                palindromes[numPalindromes] = d6*100000 + d5*10000 + d4*1000 + d3* 100 + d2*10 + d1;
-                                numPalindromes++;
-                                for (int d7 = 0; d7 <= 9; d7++) {
-                                    palindromes[numPalindromes] = d7*1000000 + d6*100000 + d5*10000 + d4*1000 + d3* 100 + d2*10 + d1;
-                                    numPalindromes++;
-                                    for (int d8 = 0; d8 <= 9; d8++) {
-                                        palindromes[numPalindromes] = d8*10000000 + d7*1000000 + d6*100000 + d5*10000 + d4*1000 + d3* 100 + d2*10 + d1;
-                                        numPalindromes++;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    palindromes[numPalindromes] = d1 * 10000000 + d2 * 1000000 + d3 * 100000 + d4 * 10000 + d4 * 1000 + d3 * 100 + d2 * 10 + d1;
+                    numPalindromes++;
                 }
             }
         }
+    }
 }
 
 int main() {
+//    cout << "1" << endl;
     ifstream fin("pprime.in");
     if (fin.is_open()) {
         fin >> A;
@@ -85,28 +79,28 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-//    for (A; A <= B; A++) {
-//        if (is_prime(A) && is_palindrome(to_string(A))) solutions.push_back(A);
-//    }
+//    cout << "2" << endl;
 
     generate_palindromes();
-//    palindromes[numPalindromes] = 5;
-//    numPalindromes++;
-//    palindromes[numPalindromes] = 121;
-//    numPalindromes++;
-//    palindromes[numPalindromes] = 383;
-//    numPalindromes++;
+//    cout << "3" << endl;
     for (int i = 0; i < numPalindromes; i++)
-        if (is_prime(palindromes[i]))
-            solutions.push_back(palindromes[i]);
+        if (is_prime(palindromes[i]) && palindromes[i] <= B && palindromes[i] >= A) {
+            solutions[numSolutions] = palindromes[i];
+            numSolutions++;
+        }
+//    cout << "4" << endl;
 
+//    cout << numPalindromes << endl;
+
+    sort(solutions, solutions + numSolutions);
+//    cout << "5" << endl;
     ofstream fout("pprime.out");
     if (fout.is_open()) {
-        for (int i = 0; i < solutions.size(); i++)
+        for (int i = 0; i < numSolutions; i++)
             fout << solutions[i] << "\n";
     } else cout << "error opening output file" << endl;
     fout.close();
-
+//    cout << "6" << endl;
     return 0;
 }
 
