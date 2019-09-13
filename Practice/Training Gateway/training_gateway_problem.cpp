@@ -12,20 +12,16 @@ using namespace std;
 
 int main() {
 	// reading input
-	ifstream reader("input.txt");
-	if (reader.is_open()) {
+	ifstream fin("input.in");
+	if (fin.is_open()) {
 
-	} else {
-		cout << "error opening input file" << endl;
-	}
-	reader.close();
+	} else cout << "error opening input file" << endl;
+	fin.close();
 
 	// writing output
-	ofstream writer("output.txt");
-	if (writer.is_open()) {
+	ofstream fout("output.out");
+	if (fout.is_open()) {
 
-	} else {
-		cout << "error opening output file" << endl;
-	}
-	writer.close();
+	} else cout << "error opening output file" << endl;
+    fout.close();
 }
