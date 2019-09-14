@@ -13,8 +13,10 @@ using namespace std;
 int R;
 int rows[1000][1000];
 int largest = -1;
+int solves = 0;
 
 void solve(int i, int r, int sum) {
+    solves += 1;
     sum += rows[r][i];
 
     if (sum > largest)
@@ -24,39 +26,39 @@ void solve(int i, int r, int sum) {
         return;
 
     int arrMaxI = sizeof(rows[r])/sizeof(rows[r][0]) - 1;
-    if (i > 0 && r >= 200) {
-        if (rows[r+1][i] != 0) {
-            if (i == 0) {
-                // check right child if on left edge
-                if (rows[r][0] + rows[r+1][1] >= rows[r][1] + rows[r+1][1])
-                    solve(i, r+1, sum);
-            } else if (i == arrMaxI) {
-                // check left child if on right edge
-                if (rows[r][i] + rows[r+1][i] >= rows[r][i-1] + rows[r+1][i])
-                    solve(i, r+1, sum);
-            } else {
-                // check both children if in middle
-                if (rows[r][i] + rows[r+1][i] >= rows[r][i-1] + rows[r+1][i])
-                    solve(i, r+1, sum);
-                if (rows[r][i] + rows[r+1][i+1] >= rows[r][i+1] + rows[r+1][i+1])
-                    solve(i, r+1, sum);
-            }
-        }
-        if (rows[r+1][i+1] != 0)
-                solve(i+1, r+1, sum);
+//    if (i > 0 && r >= 200) {
+//        if (rows[r+1][i] != 0) {
+//            if (i == 0) {
+//                // check right child if on left edge
+//                if (rows[r][0] + rows[r+1][1] >= rows[r][1] + rows[r+1][1])
+//                    solve(i, r+1, sum);
+//            } else if (i == arrMaxI) {
+//                // check left child if on right edge
+//                if (rows[r][i] + rows[r+1][i] >= rows[r][i-1] + rows[r+1][i])
+//                    solve(i, r+1, sum);
+//            } else {
+//                // check both children if in middle
+//                if (rows[r][i] + rows[r+1][i] >= rows[r][i-1] + rows[r+1][i])
+//                    solve(i, r+1, sum);
+//                if (rows[r][i] + rows[r+1][i+1] >= rows[r][i+1] + rows[r+1][i+1])
+//                    solve(i, r+1, sum);
+//            }
+//        }
+//        if (rows[r+1][i+1] != 0)
+//                solve(i+1, r+1, sum);
 
 //        else {
-//            if (rows[r+1][i] != 0)
-//                solve(i, r+1, sum);
-//            if (rows[r+1][i+1] != 0)
-//                solve(i+1, r+1, sum);
+            if (rows[r+1][i] != 0)
+                solve(i, r+1, sum);
+            if (rows[r+1][i+1] != 0)
+                solve(i+1, r+1, sum);
 //        }
-    } else {
-        if (rows[r+1][i] != 0)
-            solve(i, r+1, sum);
-        if (rows[r+1][i+1] != 0)
-            solve(i+1, r+1, sum);
-    }
+//    } else {
+//        if (rows[r+1][i] != 0)
+//            solve(i, r+1, sum);
+//        if (rows[r+1][i+1] != 0)
+//            solve(i+1, r+1, sum);
+//    }
 
 
 
@@ -77,6 +79,8 @@ int main() {
     fin.close();
 
     solve(0, 0, 0);
+
+    cout << solves << endl;
 
     ofstream fout("numtri.out");
     if (fout.is_open()) {
