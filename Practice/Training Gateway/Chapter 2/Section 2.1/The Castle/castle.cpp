@@ -12,16 +12,17 @@ using namespace std;
 
 struct component {
     int size;
-    int nodes[22500][2];
+    int nodes[500][2];
 };
 
 int M, N;
 int castle[150][150];
-component components[22500];
+component components[500];
 int numComponents = 0;
 int largestComponent = -1;
 int largestCreatableRoom = -1;
-int wallToRemove[1][1];
+int wallToRemove[2];
+string wtrDirection;
 
 void intToWalls(int i, int row, int col) {
     if (i % 2 == 1) {
@@ -74,20 +75,21 @@ void printCastle() {
         }
         cout << endl;
     }
+    cout << endl;
 }
 
-void dfs(int x, int y, component & c, int i) {
+void dfs(int y, int x, component & c, int i) {
     // assign current node to component
-    c.nodes[i][0] = x;
-    c.nodes[i][1] = y;
+    c.nodes[i][0] = y;
+    c.nodes[i][1] = x;
     c.size += 1;
     // mark current node visited
-    castle[x][y] = 8;
+    castle[y][x] = 8;
     // recurse on neighbor nodes and mark them visited
     for (int a = -1; a <= 1; a++) {
         for (int b = -1; b <= 1; b++) {
-            if (castle[x+a][y+b] == 0)
-                dfs(x+a, y+b, c, ++i);
+            if (castle[y+a][x+b] == 0)
+                dfs(y+a, x+b, c, ++i);
         }
     }
 }
@@ -115,6 +117,50 @@ void findLargestComponent() {
     }
 }
 
+bool moreOptimal(int y, int x, int optimal[2]) {
+    if (x < optimal[1])
+        return true;
+    if (y < optimal[0])
+        return true;
+
+    return false;
+}
+
+void findSize(int y, int x, int & size, int copyCastle[150][150]) {
+    // add current node and mark visited
+    size += 1;
+    copyCastle[y][x] = 0;
+    // recurse on neighbor nodes and mark them visited
+    for (int a = -1; a <= 1; a++) {
+        for (int b = -1; b <= 1; b++) {
+            if (copyCastle[y+a][x+b] == 8 && (a == 0 || b == 0)) {
+                findSize(y+a, x+b, size, copyCastle);
+            }
+        }
+    }
+}
+
+void findBreakWall() {
+    for (int i = N*2-1; i > 0; i--) {
+        for (int j = 1; j < M*2; j++) {
+            if (castle[i][j] == 1) {
+                int copyCastle[150][150];
+                for (int i = 0; i < N*2+1; i++)
+                    for (int j = 0; j < M*2+1; j++)
+                        copyCastle[i][j] = castle[i][j];
+                int size = 0;
+                findSize(i, j, size, copyCastle);
+                size = size / 2 + 1;
+                if (size > largestCreatableRoom) {
+                    largestCreatableRoom = size;
+                    wallToRemove[0] = i;
+                    wallToRemove[1] = j;
+                }
+            }
+        }
+    }
+}
+
 int main() {
     // reading input
     ifstream fin("castle.in");
@@ -125,11 +171,18 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    printCastle();
+//    printCastle();
     floodFill();
-    cout << numComponents << endl;
     findLargestComponent();
-    cout << largestComponent << endl;
+    findBreakWall();
+
+    if (castle[wallToRemove[0]+1][wallToRemove[1]] == 8)
+        wtrDirection = "N";
+    else
+        wtrDirection = "E";
+    wallToRemove[0] = wallToRemove[0] / 2 + 1;
+    if (wallToRemove[1] != 1)
+        wallToRemove[1] = wallToRemove[1] / 2;
 
     // writing output
     ofstream fout("castle.out");
@@ -137,6 +190,7 @@ int main() {
         fout << numComponents << "\n";
         fout << largestComponent << "\n";
         fout << largestCreatableRoom << "\n";
+        fout << wallToRemove[0] << " " << wallToRemove[1] << " " << wtrDirection << "\n";
     } else cout << "error opening output file" << endl;
     fout.close();
 }
