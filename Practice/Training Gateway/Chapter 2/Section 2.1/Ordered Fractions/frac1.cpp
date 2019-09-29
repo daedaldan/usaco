@@ -27,6 +27,16 @@ bool fracComp(string a, string b) {
     }
 }
 
+int gcd(int a, int b) {
+    int gcd = -1;
+    for (int i = 1; i <= max(a, b); i++) {
+        if ((a % i == 0) && (b % i == 0) && (i > gcd))
+            gcd = i;
+    }
+
+    return gcd;
+}
+
 int main() {
     // reading input
     ifstream fin("frac1.in");
@@ -40,8 +50,10 @@ int main() {
     numFracs = 2;
     for (int d = 2; d <= N; d++) {
         for (int n = 1; n < d; n++) {
-            fracs[numFracs] = to_string(n) + "/" + to_string(d);
-            numFracs++;
+            if (gcd(n, d) == 1) {
+                fracs[numFracs] = to_string(n) + "/" + to_string(d);
+                numFracs++;
+            }
         }
     }
 
@@ -51,9 +63,6 @@ int main() {
     ofstream fout("frac1.out");
     if (fout.is_open()) {
         for (int i = 0; i < numFracs; i++) {
-            if (i != numFracs-1)
-                fout << fracs[i] << " ";
-            else
                 fout << fracs[i] << "\n";
         }
     } else cout << "error opening output file" << endl;
