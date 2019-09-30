@@ -63,10 +63,6 @@ bool smallerFeedTypes(state f, state sol) {
 }
 
 bool isOptimal(state f) {
-    if (f.size == 10) {
-        if (satisfiesNeeds(f))
-            cout << "satisfied" << endl;
-    }
     if (!satisfiesNeeds(f))
         return false;
     if (f.size < minScoops)
@@ -112,7 +108,6 @@ int main() {
                 fin >> feeds[i][j];
     } else cout << "error opening input file" << endl;
     fin.close();
-    cout << G << endl;
 
     dfs();
     for (int i = 0; i < minScoops; i++)
