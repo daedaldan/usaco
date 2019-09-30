@@ -70,46 +70,35 @@ bool isOptimal(state f) {
     return false;
 }
 
-int process(state f, queue<state> & unprocessed) {
-    // if an optimal solution is found, return to avoid processing unnecessary states
+int dfs_id_process(state f, int depth) {
+    if (depth == 0)
+        return 0;
+
     if (f.size > minScoops)
         return 1;
 
-    // check is state is optimal
     if (isOptimal(f)) {
         minScoops = f.size;
         solution = f;
     }
-    // enqueue next state
+
     for (int i = 0; i < G; i++) {
         state fCopy = f;
         if (!overlap(i, f)) {
             fCopy.feedTypes[f.size] = i;
             fCopy.size++;
-            unprocessed.push(fCopy);
+            dfs_id_process(fCopy, depth-1);
         }
     }
 
     return 0;
 }
 
-void bfs() {
-    queue<state> unprocessedStates;
-    // enqueue initial states
-    for (int i = 0; i < G; i++) {
-        state s = state();
-        s.feedTypes[0] = i;
-        s.size++;
-        unprocessedStates.push(s);
-    }
-
-    // process states in bfs order
-    while(!unprocessedStates.empty()) {
-        state f = unprocessedStates.front();
-        unprocessedStates.pop();
-        if (process(f, unprocessedStates) == 1)
+void dfs_id() {
+    state f = state();
+    for (int i = 0; i < 15; i++)
+        if (dfs_id_process(f, i) == 1)
             return;
-    }
 }
 
 int main() {
@@ -126,7 +115,7 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    bfs();
+    dfs_id();
     for (int i = 0; i < minScoops; i++)
         solution.feedTypes[i]++;
 
