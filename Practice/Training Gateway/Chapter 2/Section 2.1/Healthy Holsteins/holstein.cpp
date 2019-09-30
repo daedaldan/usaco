@@ -63,42 +63,40 @@ bool smallerFeedTypes(state f, state sol) {
 }
 
 bool isOptimal(state f) {
-    if (f.size < minScoops && satisfiesNeeds(f))
+    if (f.size == 10) {
+        if (satisfiesNeeds(f))
+            cout << "satisfied" << endl;
+    }
+    if (!satisfiesNeeds(f))
+        return false;
+    if (f.size < minScoops)
         return true;
-    if (f.size == minScoops && smallerFeedTypes(f, solution) && satisfiesNeeds(f))
+    if (f.size == minScoops && smallerFeedTypes(f, solution))
         return true;
     return false;
 }
 
-int dfs_id_process(state f, int depth) {
-    if (depth == 0)
-        return 0;
-
+void process(state f, int lastAdded) {
     if (f.size > minScoops)
-        return 1;
+        return;
 
     if (isOptimal(f)) {
         minScoops = f.size;
         solution = f;
     }
 
-    for (int i = 0; i < G; i++) {
+    if (lastAdded < G-1) {
         state fCopy = f;
-        if (!overlap(i, f)) {
-            fCopy.feedTypes[f.size] = i;
-            fCopy.size++;
-            dfs_id_process(fCopy, depth-1);
-        }
+        process(fCopy, lastAdded+1);
+        fCopy.feedTypes[f.size] = lastAdded+1;
+        fCopy.size++;
+        process(fCopy, lastAdded+1);
     }
-
-    return 0;
 }
 
-void dfs_id() {
+void dfs() {
     state f = state();
-    for (int i = 0; i < 15; i++)
-        if (dfs_id_process(f, i) == 1)
-            return;
+    process(f, -1);
 }
 
 int main() {
@@ -114,8 +112,9 @@ int main() {
                 fin >> feeds[i][j];
     } else cout << "error opening input file" << endl;
     fin.close();
+    cout << G << endl;
 
-    dfs_id();
+    dfs();
     for (int i = 0; i < minScoops; i++)
         solution.feedTypes[i]++;
 
