@@ -8,8 +8,6 @@ LANG: C++
 #include <string>
 #include <fstream>
 #include <queue>
-#include <algorithm>
-#include <iterator>
 
 using namespace std;
 
@@ -30,9 +28,6 @@ void swap(int a, int b, state & s) {
 }
 
 bool sorted(state s) {
-//    for (int i = 0; i < N; i++)
-//        cout << s.nums[i] << " ";
-//    cout << endl;
     for (int i = 0; i < N-1; i++) {
         if (s.nums[i] > s.nums[i+1])
             return false;
@@ -41,49 +36,92 @@ bool sorted(state s) {
     return true;
 }
 
-int process(state s, queue<state> unprocessed) {
+//int process(state s, queue<state> & unprocessed) {
+//    if (sorted(s)) {
+//        cout << "       HERE " << endl;
+//        for (int i = 0; i < N; i++)
+//            cout << s.nums[i] << endl;
+//        minExchanges = s.exchanges;
+//        return 1;
+//    }
+//
+//    for (int i = 0; i < N; i++) {
+//        for (int j = 0; j < N; j++) {
+//            state sCopy = s;
+//            if (sCopy.nums[i] != sCopy.nums[j]) {
+//                swap(i, j, sCopy);
+//                unprocessed.push(sCopy);
+//            }
+//        }
+//    }
+//
+//    return 0;
+//}
+//
+
+int capped_dfs(state & s, int lastA, int lastB, int depth) {
+    cout << depth << endl;
     if (sorted(s)) {
-        cout << "       HERE " << endl;
         minExchanges = s.exchanges;
         return 1;
     }
 
+    if (depth == 0)
+        return 0;
+
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            state sCopy = s;
-            if (sCopy.nums[i] != sCopy.nums[j]) {
-                if (sCopy.exchanges == 1 && i == 4 && j == 6)
-                    cout << "step 2" << endl;
+            if (records[i] != records[j] &&
+            lastA != i &&
+            lastA != j &&
+            lastB != i &&
+            lastB != j) {
+                state sCopy = state();
+                for (int k = 0; k < N; k++)
+                    sCopy.nums[k] = records[k];
                 swap(i, j, sCopy);
-                unprocessed.push(sCopy);
+                if (capped_dfs(sCopy, i, j, depth-1) == 1)
+                    return 1;
             }
         }
     }
+
+    return 0;
 }
 
-void bfs() {
-    queue<state> unprocessed;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            state s = state();
-            copy(begin(records), end(records), begin(s.nums));
-            if (s.nums[i] != s.nums[j])
-                swap(i, j, s);
-            if (i == 0 && j == 3)
-                cout << "step 1" << endl;
-            unprocessed.push(s);
-        }
-    }
-
-    while (!unprocessed.empty()) {
-        state next = unprocessed.front();
-        unprocessed.pop();
-        if (process(next, unprocessed) == 1) {
-            cout << "here" << endl;
+void dfs_id(state s) {
+    for (int i = 0; i < 500; i++) {
+        if (capped_dfs(s, -1, -1, i) == 1)
             return;
-        }
     }
 }
+
+//int dfs(state & s, int lastA, int lastB) {
+//    cout << s.exchanges << endl;
+//    if (sorted(s)) {
+//        minExchanges = s.exchanges;
+//        return 1;
+//    }
+//
+//    for (int i = 0; i < N; i++) {
+//        for (int j = 0; j < N; j++) {
+//            if (records[i] != records[j] &&
+//            lastA != i &&
+//            lastA != j &&
+//            lastB != i &&
+//            lastB != j) {
+//                state sCopy = state();
+//                for (int k = 0; k < N; k++)
+//                    sCopy.nums[k] = records[k];
+//                swap(i, j, sCopy);
+//                if (dfs(sCopy, i, j) == 1)
+//                    return 1;
+//            }
+//        }
+//    }
+//
+//    return 0;
+//}
 
 int main() {
     // reading input
@@ -95,7 +133,12 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    bfs();
+    state s;
+    for (int i = 0; i < N; i++) {
+        s.nums[i] = records[i];
+    }
+
+    dfs_id(s);
 
     // writing output
     ofstream fout("sort3.out");
