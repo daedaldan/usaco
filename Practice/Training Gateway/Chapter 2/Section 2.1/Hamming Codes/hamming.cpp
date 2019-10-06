@@ -18,30 +18,10 @@ struct code {
 
 struct hamCodes {
     int size = 0;
-    code codes[16];
+    code codes[500];
 };
 
 int N, B, D;
-code codes[256];
-hamCodes possibleSolutions[1000000];
-int numCodes = 0;
-int numPossibleSolutions = 0;
-int minValue = 99999999;
-hamCodes solution;
-
-void generateCodes(code c, int len) {
-    if (len == B) {
-        codes[numCodes] = c;
-        numCodes++;
-    } else {
-        code c1 = c;
-        c1.code[len] = 0;
-        generateCodes(c1, len+1);
-        code c2 = c;
-        c2.code[len] = 1;
-        generateCodes(c2, len+1);
-    }
-}
 
 int hammingDistance(int a[], int b[]) {
     int distance = 0;
@@ -52,10 +32,13 @@ int hammingDistance(int a[], int b[]) {
 }
 
 bool hammingEquality(hamCodes c) {
-    for (int i = 1; i < c.size; i++) {
-//        cout << "distance: " << hammingDistance(c.codes[0].code, c.codes[i].code) << endl;
-        if (hammingDistance(c.codes[0].code, c.codes[i].code) < D) {
-            return false;
+    for (int i = 0; i < c.size; i++) {
+        for (int j = 0; j < c.size; j++) {
+            if (i != j) {
+                if (hammingDistance(c.codes[i].code, c.codes[j].code) < D) {
+                    return false;
+                }
+            }
         }
     }
 
@@ -71,21 +54,18 @@ int binaryToDecimal(code c) {
     return decimal;
 }
 
-bool existing(hamCodes hc, code c) {
-    for (int i = 0; i < hc.size; i++) {
-        bool same = true;
-        for (int j = 0; j < B; j++) {
-            if (hc.codes[i].code[j] != c.code[j])
-                same = false;
+code numToCode(int n) {
+    code c = code();
+    for (int i = B; i > 0; i--) {
+        if (n - pow(2, i-1) >= 0) {
+            c.code[i-1] = 1;
+            n -= pow(2, i-1);
+        } else {
+            c.code[i-1] = 0;
         }
-        if (same) return true;
     }
 
-    return false;
-}
-
-bool cmpCode(code a, code b) {
-    return binaryToDecimal(a) < binaryToDecimal(b);
+    return c;
 }
 
 int main() {
@@ -97,38 +77,27 @@ int main() {
         fin >> D;
     } else cout << "error opening input file" << endl;
     fin.close();
-    cout << "here" << endl;
-
-    code emptyC;
-    generateCodes(emptyC, 0);
-    cout << "here" << endl;
-    sort(codes, codes + numCodes, cmpCode);
 
     hamCodes hc;
-    hc.codes[0] = codes[0];
+    hc.codes[0] = numToCode(0);
     hc.size++;
-    for (int i = 0; i < numCodes; i++) {
+    for (int i = 1; i < pow(2, B); i++) {
         if (hc.size < N) {
-            cout << binaryToDecimal(codes[i]) << endl;
             hamCodes hcCopy = hc;
-            hcCopy.codes[hcCopy.size] = codes[i];
+            hcCopy.codes[hcCopy.size] = numToCode(i);
             hcCopy.size++;
             if (hammingEquality(hcCopy)) {
-                cout << "   made it" << endl;
-                hc.codes[hc.size] = codes[i];
+                hc.codes[hc.size] = numToCode(i);
                 hc.size++;
             }
         } else break;
     }
 
-    for (int i = 0; i < hc.size; i++)
-        cout << binaryToDecimal(hc.codes[i]) << endl;
-
     // writing output
     ofstream fout("hamming.out");
     if (fout.is_open()) {
         for (int i = 0; i < hc.size; i++) {
-            if ((i+1) % 10 == 0) {
+            if ((i+1) % 10 == 0 || i == hc.size-1) {
                 fout << binaryToDecimal(hc.codes[i]) << "\n";
             } else {
                 fout << binaryToDecimal(hc.codes[i]) << " ";
