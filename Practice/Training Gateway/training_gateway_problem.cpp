@@ -24,4 +24,6 @@ int main() {
 
 	} else cout << "error opening output file" << endl;
     fout.close();
+
+    return 0;
 }
