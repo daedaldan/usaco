@@ -16,9 +16,9 @@ struct num {
     int digits[9];
 };
 
-int M;
+unsigned long int M;
 
-int numDigits(int i) {
+int numDigits(unsigned long int i) {
     int length = 1;
     while (i /= 10)
         length++;
@@ -26,18 +26,20 @@ int numDigits(int i) {
     return length;
 }
 
-int nextIndex(num n, int i) {
+int nextIndex(num n, unsigned long int i) {
     if (n.digits[i] == n.size) {
         return i;
     } else if (i+n.digits[i] <= n.size-1) {
         return i + n.digits[i];
     } else {
-        return (i + n.digits[i]) - n.size;
+        i = (i + n.digits[i]) - n.size;
+        while (i > n.size-1)
+            i -= n.size;
+        return i;
     }
 }
 
 bool isRunaround(num n) {
-    cout << "here";
     int a = 0;
     int touched[9];
     int digitUniqueness[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -58,7 +60,7 @@ bool isRunaround(num n) {
         return false;
     // check that all digits were touched and are unique
     for (int i = 0; i < n.size; i++) {
-        if (touched[i] != 1 || digitUniqueness[i] > 1)
+        if (touched[i] != 1 || digitUniqueness[n.digits[i]] > 1)
             return false;
     }
 
@@ -66,7 +68,6 @@ bool isRunaround(num n) {
 }
 
 num intToNum(int i) {
-    cout << "here";
     num n;
     int length = numDigits(i);
     n.size = length;
@@ -77,7 +78,6 @@ num intToNum(int i) {
         n.digits[index] = digit;
         index -= 1;
     }
-    cout << "here";
 
     return n;
 }
@@ -85,17 +85,14 @@ num intToNum(int i) {
 int main() {
     // reading input
     ifstream fin("runround.in");
-    cout << "here";
     if (fin.is_open()) {
         fin >> M;
-        cout << "here";
     } else cout << "error opening input file" << endl;
     fin.close();
-    cout << "here";
 
-    int i = M+1;
+    unsigned long int i = M+1;
     while (!isRunaround(intToNum(i))) {
-        cout << i;
+        cout << i << endl;
         i++;
     }
 
