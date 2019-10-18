@@ -32,45 +32,42 @@ int updates = 0;
 int cmp(change a, change b) {return a.day < b.day;}
 
 bool newMax(cow & a, cow & b, cow & c) {
-//    for (int i = 0; i < m.names.size(); i++)
-//        cout << m.names[i] << endl;
-//    cout << endl;
     // initialize new max
     maxMilk newM;
     vector<string> emptyVector;
     newM.names = emptyVector;
-    newM.milk = m.milk+1;
+    newM.milk = -1;
 
     //  updating new max
-    if (bessie.milk == m.milk) {
+    if (bessie.milk == newM.milk) {
         newM.milk = bessie.milk;
         newM.names.push_back("Bessie");
-    } else if (bessie.milk > m.milk) {
+    } else if (bessie.milk > newM.milk) {
         newM.milk = bessie.milk;
         newM.names = emptyVector;
         newM.names.push_back("Bessie");
     }
 
-    if (elsie.milk == m.milk) {
+    if (elsie.milk == newM.milk) {
         newM.milk = elsie.milk;
         newM.names.push_back("Elsie");
-    } else if (elsie.milk > m.milk) {
+    } else if (elsie.milk > newM.milk) {
         newM.milk = elsie.milk;
         newM.names = emptyVector;
         newM.names.push_back("Elsie");
     }
 
-    if (mildred.milk == m.milk) {
+    if (mildred.milk == newM.milk) {
         newM.milk = mildred.milk;
         newM.names.push_back("Mildred");
-    } else if (mildred.milk > m.milk) {
+    } else if (mildred.milk > newM.milk) {
         newM.milk = mildred.milk;
         newM.names = emptyVector;
         newM.names.push_back("Mildred");
     }
 
-    // checking for changes in max
-    if (newM.milk != m.milk || newM.names.size() != m.names.size()) {
+    // checking for changes in max cows
+    if (newM.names.size() != m.names.size()) {
         m = newM;
         return true;
     }
@@ -107,8 +104,6 @@ int main() {
         sort(changes, changes+N, cmp);
     } else cout << "error opening input file" << endl;
     fin.close();
-
-    cout << N << endl;
 
     // making changes
     for (int i = 0; i < N; i++) {
