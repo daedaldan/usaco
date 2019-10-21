@@ -20,44 +20,16 @@ struct subsets {
 
 int N;
 int goal;
-subsets sums[40][40];
-int equalSums = 0;
-int found[1000][1000];
+long long creatable[40][781];
+long long solutions = 0;
 
-void printSums() {
-    for (int i = 0; i <= N; i++) {
-        for (int j = 0; j <= N; j++) {
-            cout << sums[i][j].leftSum << "," << sums[i][j].rightSum << " ";
-        }
-        cout << endl;
-    }
-}
-
-void fillSums(int row, int col, bool right) {
-    if (sums[row][col].nextAdd == N+1 && sums[row][col].leftSum == sums[row][col].rightSum)
-        cout << sums[row][col].leftSum << " " << sums[row][col].rightSum << endl;
-    if (!(row == 0 && col == 0)) {
-        if (right) {
-            sums[row][col].leftSum = sums[row][col-1].leftSum;
-            sums[row][col].rightSum = sums[row][col-1].rightSum;
-            sums[row][col].rightSum += sums[row][col-1].nextAdd;
-            sums[row][col].nextAdd = sums[row][col-1].nextAdd+1;
-        } else {
-            sums[row][col].leftSum = sums[row-1][col].leftSum;
-            sums[row][col].rightSum = sums[row-1][col].rightSum;
-            sums[row][col].leftSum += sums[row-1][col].nextAdd;
-            sums[row][col].nextAdd = sums[row-1][col].nextAdd+1;
-        }
-        sums[row][col].visited = true;
-    }
-
-    if (sums[row][col].nextAdd <= N) {
-        fillSums(row, col+1, true);
-        fillSums(row+1, col, false);
-    } else {
-        if (sums[row][col].leftSum == sums[row][col].rightSum) {
-            found[row][col] = 1;
-            equalSums++;
+int fillCreatable() {
+    for (int i = 2; i <= N; i++) {
+        int j = 0;
+        while (creatable[i-1][j] >= 1) {
+            creatable[i][j] += creatable[i-1][j];
+            creatable[i][j+i] += creatable[i-1][j];
+            j++;
         }
     }
 }
@@ -74,17 +46,29 @@ int main() {
         goal += i;
     }
 
-    printSums();
-
-    fillSums(0, 0, false);
-
-    cout << endl;
-    printSums();
+    if (goal % 2 == 1) {
+        ;
+    } else {
+        goal /= 2;
+        creatable[0][0] = 1;
+        creatable[1][0] = 1;
+        creatable[1][1] = 1;
+        fillCreatable();
+        solutions = creatable[N][goal];
+        solutions /= 2;
+    }
+    for (int i = 0; i <= N; i++) {
+        cout << i << ": ";
+        for (int j = 0; j <= goal*2; j++) {
+            cout << creatable[i][j] << " ";
+        }
+        cout << endl;
+    }
 
     // writing output
     ofstream fout("subset.out");
     if (fout.is_open()) {
-        fout << equalSums / 2 << "\n";
+        fout << solutions << "\n";
     } else cout << "error opening output file" << endl;
     fout.close();
 
