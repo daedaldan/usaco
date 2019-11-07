@@ -23,9 +23,15 @@ int solve(int c, int m) {
         return dp[c][m];
     } else {
         int sum = 0;
-        for (int i = 1; i < c; i++) {
-            for (int j = 0; j <= m; j += coins[i]) {
-                sum += solve(i-1, m - j) + solve(i-1, j) + 1;
+        for (int i = 1; i <= c; i++) {
+            // avoid repetition?
+            for (int j = 0; j <= m; j += coins[i-1]) {
+                // left includes coin
+                sum += solve(i, m - j) + solve(i-1, j);
+                // right includes coin
+                sum += solve(i-1, m - j) + solve(i, j);
+                // both include coin
+                sum += solve(i, m - j) + solve(i, j);
             }
         }
         dp[c][m] = sum;
@@ -48,15 +54,32 @@ int main() {
     fin.close();
 
     // setting all values in dp array to -1
+    for (int i = 0; i <= V; i++) {
+        for (int j = 0; j <= N; j++) {
+            dp[i][j] = -1;
+        }
+    }
 
     // setting base cases for 0 dollars
-    for (int i = 0; i < V; i++) {
+    for (int i = 0; i <= V; i++) {
         dp[i][0] = 0;
+    }
+
+    // setting base cases for 0 coins
+    for (int i = 0; i < N; i++) {
+        dp[0][i] = 0;
     }
 
     // setting base cases for each coin
     for (int i = 1; i <= V; i++) {
         dp[i][coins[i]] = 1;
+    }
+
+    for (int i = 0; i <= V; i++) {
+        for (int j = 0; j <= N; j++) {
+            cout << dp[i][j] << " ";
+        }
+        cout << endl;
     }
 
     solutions = solve(V, N) + 1;
