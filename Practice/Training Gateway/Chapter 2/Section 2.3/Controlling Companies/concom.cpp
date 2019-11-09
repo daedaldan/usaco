@@ -47,10 +47,47 @@ void initializeArrays() {
 
     // setting each company to own itself
     for (int i = 1; i <= 100; i++) {
-        companies[i].shares[i] = 100;
+        companies[i].shares[i] = 999;
     }
 }
 
+void evaluate (int compNum) {
+    if (!companies[compNum].visited) {
+        companies[compNum].visited = true;
+        for (int i = 0; i < companies[compNum].ownings; i++) {
+                evaluate(companies[compNum].ownedCompanies[i]);
+        }
+
+        for (int i = 0; i < companies[compNum].ownings; i++) {
+            if (companies[compNum].shares[companies[compNum].ownedCompanies[i]] >= 50) {
+                company ownedComp = companies[companies[compNum].ownedCompanies[i]];
+                for (int j = 0; j < ownedComp.ownings; j++) {
+                    companies[compNum].shares[ownedComp.ownedCompanies[j]] += ownedComp.shares[ownedComp.ownedCompanies[j]];
+                    bool found = false;
+                    for (int k = 0; k < companies[compNum].ownings; k++) {
+                        if (companies[compNum].ownedCompanies[k] == ownedComp.ownedCompanies[j]) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        companies[compNum].ownedCompanies[companies[compNum].ownings] = ownedComp.ownedCompanies[j];
+                        companies[compNum].ownings++;
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+void evaluateAll() {
+    for (int i = 1; i <= numCompanies; i++) {
+        if (!companies[i].visited) {
+            evaluate(i);
+        }
+    }
+}
 
 int main() {
     // setting all shares to 0 and each company to own itself
@@ -77,13 +114,19 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
+    company companiesCopy[101];
+    for (int i = 0; i < 101; i++) {
+        companiesCopy[i] = companies[i];
+    }
     // adding subsidiaries' shares to companies
-    
+    evaluateAll();
 
     // finding companies that own one another
     for (int i = 1; i <= numCompanies; i++) {
+        cout << i << " owns:" << endl;
         for (int j = 0; j < companies[i].ownings; j++) {
-            if (companies[i].shares[companies[i].ownedCompanies[j]] >= 50) {
+            cout << "   " << companies[i].shares[companies[i].ownedCompanies[j]] << " of " << companies[i].ownedCompanies[j] << endl;
+            if (companies[i].shares[companies[i].ownedCompanies[j]] >= 50 && i != companies[i].ownedCompanies[j]) {
                 solutions[numSolutions].owner = i;
                 solutions[numSolutions].owned = companies[i].ownedCompanies[j];
                 numSolutions++;
@@ -92,8 +135,6 @@ int main() {
     }
 
     sort(solutions, solutions + numSolutions, cmp);
-
-    cout << numSolutions << endl;
 
     // writing output
     ofstream fout("concom.out");

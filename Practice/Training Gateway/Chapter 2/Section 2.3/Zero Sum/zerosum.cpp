@@ -47,12 +47,12 @@ bool evaluateState(state s) {
         if(isOp(s.expression[i])) {
             currentNum += s.expression[i];
             i++;
-            while(!isOp(s.expression[i]) && i < s.i) {
+            while(i < s.i && !isOp(s.expression[i])) {
                 if (s.expression[i] != " ")
                     currentNum += s.expression[i];
                 i++;
             }
-            cout << stoi(currentNum) << endl;
+
             sum += stoi(currentNum);
             currentNum = "";
             i--;
@@ -69,7 +69,6 @@ void findSolutions(state & s) {
     s.i += 2;
     if (s.i == N * 2) {
         if (evaluateState(s)) {
-//            printState(s);
             solutions[numSolutions] = s;
             numSolutions++;
         }
@@ -97,7 +96,6 @@ int main() {
 
     state a;
     findSolutions(a);
-    cout << numSolutions << endl;
 
     sort(solutions, solutions + numSolutions, cmp);
 
