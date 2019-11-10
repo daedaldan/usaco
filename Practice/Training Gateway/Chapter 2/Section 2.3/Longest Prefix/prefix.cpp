@@ -18,6 +18,8 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
+
+
     // writing output
     ofstream fout("prefix.out");
     if (fout.is_open()) {

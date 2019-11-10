@@ -58,11 +58,15 @@ void evaluate (int compNum) {
                 evaluate(companies[compNum].ownedCompanies[i]);
         }
 
+        // adding companies' subsidiaries' shares to its own
         for (int i = 0; i < companies[compNum].ownings; i++) {
-            if (companies[compNum].shares[companies[compNum].ownedCompanies[i]] >= 50) {
+            // if the company owns the company it has shares in
+            if (companies[compNum].shares[companies[compNum].ownedCompanies[i]] >= 50 && companies[compNum].ownedCompanies[i] != compNum) {
                 company ownedComp = companies[companies[compNum].ownedCompanies[i]];
                 for (int j = 0; j < ownedComp.ownings; j++) {
                     companies[compNum].shares[ownedComp.ownedCompanies[j]] += ownedComp.shares[ownedComp.ownedCompanies[j]];
+
+                    // checking if subsidiary's subsidiary is in original company's ownings
                     bool found = false;
                     for (int k = 0; k < companies[compNum].ownings; k++) {
                         if (companies[compNum].ownedCompanies[k] == ownedComp.ownedCompanies[j]) {
@@ -70,11 +74,13 @@ void evaluate (int compNum) {
                             break;
                         }
                     }
-                    if (!found) {
+
+                    // if subsidiary's subsidiary is not in original company's ownings,
+                    // then add to original company's ownings
+                    if (!found && companies[compNum].shares[ownedComp.ownedCompanies[j]] >= 50) {
                         companies[compNum].ownedCompanies[companies[compNum].ownings] = ownedComp.ownedCompanies[j];
                         companies[compNum].ownings++;
                     }
-
                 }
             }
         }
@@ -114,18 +120,12 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    company companiesCopy[101];
-    for (int i = 0; i < 101; i++) {
-        companiesCopy[i] = companies[i];
-    }
     // adding subsidiaries' shares to companies
     evaluateAll();
 
     // finding companies that own one another
     for (int i = 1; i <= numCompanies; i++) {
-        cout << i << " owns:" << endl;
         for (int j = 0; j < companies[i].ownings; j++) {
-            cout << "   " << companies[i].shares[companies[i].ownedCompanies[j]] << " of " << companies[i].ownedCompanies[j] << endl;
             if (companies[i].shares[companies[i].ownedCompanies[j]] >= 50 && i != companies[i].ownedCompanies[j]) {
                 solutions[numSolutions].owner = i;
                 solutions[numSolutions].owned = companies[i].ownedCompanies[j];
