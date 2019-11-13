@@ -16,6 +16,7 @@ struct company {
     bool visited = false;
     int ownedCompanies[101];
     int shares[101];
+    bool addedThrough[101][101];
 };
 
 struct owning {
@@ -64,8 +65,11 @@ void evaluate (int compNum) {
             if (companies[compNum].shares[companies[compNum].ownedCompanies[i]] >= 50 && companies[compNum].ownedCompanies[i] != compNum) {
                 company ownedComp = companies[companies[compNum].ownedCompanies[i]];
                 for (int j = 0; j < ownedComp.ownings; j++) {
-                    companies[compNum].shares[ownedComp.ownedCompanies[j]] += ownedComp.shares[ownedComp.ownedCompanies[j]];
-
+                    if (!companies[compNum].addedThrough[companies[compNum].ownedCompanies[i]][ownedComp.ownedCompanies[j]])
+                        companies[compNum].shares[ownedComp.ownedCompanies[j]] += ownedComp.shares[ownedComp.ownedCompanies[j]];
+                    companies[compNum].addedThrough[companies[compNum].ownedCompanies[i]][ownedComp.ownedCompanies[j]] = true;
+                    if (compNum == 1 || compNum == 49)
+                        cout << compNum << ": " << companies[compNum].ownedCompanies[i] << " owns some of " << ownedComp.ownedCompanies[j] << "; " << companies[compNum].shares[16] << endl;
                     // checking if subsidiary's subsidiary is in original company's ownings
                     bool found = false;
                     for (int k = 0; k < companies[compNum].ownings; k++) {

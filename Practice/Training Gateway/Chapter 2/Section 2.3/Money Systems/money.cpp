@@ -16,27 +16,52 @@ int coins[25];
 int dp[25][10000];
 int solutions;
 
-int solve(int c, int m) {
+void initializeDP() {
+    // setting all values in dp array to -1
+    for (int i = 0; i <= V; i++) {
+        for (int j = 0; j <= N; j++) {
+            dp[i][j] = -1;
+        }
+    }
+
+    // setting base cases for 0 dollars
+    for (int i = 0; i < V; i++) {
+        dp[i][0] = 0;
+    }
+
+    // setting base cases for 0 coins
+    for (int i = 0; i < N; i++) {
+        dp[0][i] = 0;
+    }
+
+    // setting base cases for each coin
+    int sumCoins = 0;
+    for (int i = 1; i <= V; i+=1) {
+        sumCoins += coins[i-1];
+        dp[i][sumCoins] = 1;
+    }
+}
+
+int solve(int c, int m, int layer) {
     if (dp[c][m] != -1) {
-        cout << c << " " << m << endl;
-        cout << "   " << dp[c][m] << endl;
         return dp[c][m];
     } else {
         int sum = 0;
-        for (int i = 1; i <= c; i++) {
-            // avoid repetition?
-            for (int j = 0; j <= m; j += coins[i-1]) {
+        int i = 1;
+            for (int j = coins[0]; j < m / 2; j += coins[i-1]) {
                 // left includes coin
-                sum += solve(i, m - j) + solve(i-1, j);
+                sum += solve(c, m - j, layer+1) + solve(c-1, j, layer+1);
                 // right includes coin
-                sum += solve(i-1, m - j) + solve(i, j);
+                sum += solve(c-1, m - j, layer+1) + solve(c, j, layer+1);
                 // both include coin
-                sum += solve(i, m - j) + solve(i, j);
+                sum += solve(c, m - j, layer+1) + solve(c, j, layer+1);
+                if (i != c)
+                    i++;
             }
-        }
         dp[c][m] = sum;
-        cout << c << " " << m << endl;
-        cout << "   " << sum << endl;
+        for (int i = 0; i < layer; i++)
+            cout << "   ";
+        cout << sum << " ways to make " << m << " dollars with " << c << " coins" << endl;
         return sum;
     }
 }
@@ -53,27 +78,9 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    // setting all values in dp array to -1
-    for (int i = 0; i <= V; i++) {
-        for (int j = 0; j <= N; j++) {
-            dp[i][j] = -1;
-        }
-    }
+    initializeDP();
 
-    // setting base cases for 0 dollars
-    for (int i = 0; i <= V; i++) {
-        dp[i][0] = 0;
-    }
-
-    // setting base cases for 0 coins
-    for (int i = 0; i < N; i++) {
-        dp[0][i] = 0;
-    }
-
-    // setting base cases for each coin
-    for (int i = 1; i <= V; i++) {
-        dp[i][coins[i]] = 1;
-    }
+    solutions = solve(V, N, 0) + 1;
 
     for (int i = 0; i <= V; i++) {
         for (int j = 0; j <= N; j++) {
@@ -81,8 +88,6 @@ int main() {
         }
         cout << endl;
     }
-
-    solutions = solve(V, N) + 1;
 
     // writing output
     ofstream fout("money.out");
