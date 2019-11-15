@@ -13,15 +13,21 @@ LANG: C++
 
 using namespace std;
 
+struct point {
+    bool reachable = false;
+    int numNextReachable = 0;
+    int nextReachable[7];
+    int nextReachableI = 0;
+};
+
 string primitives[200];
 int numP = 0;
 int maxP = -1;
 unordered_set<string> primCheck;
 char S[200000];
 int lengthS = 0;
-// lengths[i] is longest prefix that can be built from index i of S
-int lengths[200000];
-int solution = -1;
+// lengths[i] indicates whether S at i can be reachable through addition of primitives
+bool lengths[200000];
 
 string subS(int start, int end) {
     string slice;
@@ -31,29 +37,42 @@ string subS(int start, int end) {
     return slice;
 }
 
-int maxPrefix(int len) {
-    if (lengths[len] != 0) {
-        return lengths[len];
-    } else {
-        bool found = false;
-        int max = -1;
-        for (int i = 1; i <= maxP; i++) {
-            string a = subS(len, len+i);
-            if (primCheck.find(a) != primCheck.end()) {
-                found = true;
-                lengths[len+i] = maxPrefix(len+i);
-                // update maximum possible prefix from given index
-                if (lengths[len+i] > max)
-                    max = lengths[len+i];
+int findNextPoint(int a)  {
+    for (int i = 1; i <= maxP; i++) {
+        if (lengths[a+i])
+            return a + i;
+    }
+
+    return lengthS;
+}
+
+int iterMaxPrefix() {
+    int max = 0;
+    lengths[0] = true;
+    int lastI = 0;
+    for (int i = 0; i < lengthS; i = findNextPoint(i)) {
+        // make sure that index is reachable
+        if (lengths[i]) {
+            bool found = false;
+            // find reachable indexes
+            for (int j = 1; j <= maxP; j++) {
+                string a = subS(i, i + j);
+                if (primCheck.find(a) != primCheck.end()) {
+                    found = true;
+                    // make sure primitive addition does not exceed S
+                    if (i + a.length() <= lengthS) {
+                        lengths[i + j] = true;
+                        // update maximum possible prefix from current primitive addition
+                        if (i + j > max) {
+                            max = i + j;
+                        }
+                    }
+                }
             }
         }
-
-        if (!found) {
-            return len;
-        } else {
-            return *max_element(lengths, lengths + lengthS + 1);
-        }
     }
+
+    return max;
 }
 
 int main() {
@@ -86,9 +105,7 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    cout << numP << endl;
-
-    int solution = maxPrefix(0);
+    int solution = iterMaxPrefix();
 
     // writing output
     ofstream fout("prefix.out");
