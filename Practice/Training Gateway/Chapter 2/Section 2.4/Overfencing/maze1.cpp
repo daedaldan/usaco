@@ -7,7 +7,6 @@ LANG: C++
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <unordered_set>
 
 using namespace std;
 
@@ -25,10 +24,11 @@ int W;
 int H;
 node nodes[100];
 int numNodes = 0;
-//unordered_set<node> nodeHashTable;
 char input[201][201];
 node exits[2];
 int numExits = 0;
+int exitNodes[2];
+int numExitNodes = 0;
 int solution = -1;
 
 void printInput() {
@@ -48,8 +48,7 @@ void catalogNodesAndEdges() {
             n.row = r;
             n.col = c;
             nodes[numNodes] = n;
-//            nodeHashTable.insert(n);
-            numNodes++;
+            input[r][c] = static_cast<char>(numNodes);
             // cataloging edges
             if (input[r-1][c] == ' ' && r-1 == 0) {
                 node exit;
@@ -57,10 +56,12 @@ void catalogNodesAndEdges() {
                 exit.col = c;
                 exits[numExits] = exit;
                 numExits++;
+                exitNodes[numExitNodes] = numNodes;
+                numExitNodes++;
             } else if (input[r-1][c] == ' ') {
-                n.neighbors[n.numNeighbors][0] = r-2;
-                n.neighbors[n.numNeighbors][1] = c;
-                n.numNeighbors++;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r-2;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c;
+                nodes[numNodes].numNeighbors++;
             }
             if (input[r+1][c] == ' ' && r+1 == H*2) {
                 node exit;
@@ -68,10 +69,12 @@ void catalogNodesAndEdges() {
                 exit.col = c;
                 exits[numExits] = exit;
                 numExits++;
+                exitNodes[numExitNodes] = numNodes;
+                numExitNodes++;
             } else if (input[r+1][c] == ' ') {
-                n.neighbors[n.numNeighbors][0] = r+2;
-                n.neighbors[n.numNeighbors][1] = c;
-                n.numNeighbors++;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r+2;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c;
+                nodes[numNodes].numNeighbors++;
             }
             if (input[r][c-1] == ' ' && c-1 == 0) {
                 node exit;
@@ -79,10 +82,12 @@ void catalogNodesAndEdges() {
                 exit.col = c-1;
                 exits[numExits] = exit;
                 numExits++;
+                exitNodes[numExitNodes] = numNodes;
+                numExitNodes++;
             } else if (input[r][c-1] == ' ') {
-                n.neighbors[n.numNeighbors][0] = r;
-                n.neighbors[n.numNeighbors][1] = c-2;
-                n.numNeighbors++;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c-2;
+                nodes[numNodes].numNeighbors++;
             }
             if (input[r][c+1] == ' ' && c+1 == W*2) {
                 node exit;
@@ -90,60 +95,77 @@ void catalogNodesAndEdges() {
                 exit.col = c+1;
                 exits[numExits] = exit;
                 numExits++;
+                exitNodes[numExitNodes] = numNodes;
+                numExitNodes++;
             } else if (input[r][c+1] == ' ') {
-                n.neighbors[n.numNeighbors][0] = r;
-                n.neighbors[n.numNeighbors][1] = c+2;
-                n.numNeighbors++;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r;
+                nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c+2;
+                nodes[numNodes].numNeighbors++;
+                nodes[numNodes].distance = 1;
             }
+            numNodes++;
         }
     }
 }
 
-node findMinUnvisitedNode() {
-    node min;
-    min.distance = 999999;
+int findMinUnvisitedNode() {
+    int minNodeI = 1;
+    int minDistance = 9999999;
     for (int i = 0; i < numNodes; i++) {
-        if (nodes[i].distance < min.distance && !nodes[i].visited) {
-            min = nodes[i];
+        if (nodes[i].distance < minDistance && !nodes[i].visited) {
+            minNodeI = i;
+            minDistance = nodes[i].distance;
         }
     }
 
-    return min;
+    return minNodeI;
 }
 
 int dijkstrasMax() {
-    exits[0].distance = 0;
+    // dijkstra's from first exit
+    nodes[exitNodes[0]].distance = 1;
     int nodesVisited = 0;
 
     while (nodesVisited < numNodes) {
-        node cur = findMinUnvisitedNode();
+        int cur = findMinUnvisitedNode();
 
-        cur.visited = true;
+        nodes[cur].visited = true;
         nodesVisited++;
 
-        for (int i = 0; i < cur.numNeighbors; i++) {
-            if (cur.distance + 1 < cur.neighbors[i].distance) {
-                cur.neighbors[i].distance = cur.distance + 1;
+        for (int i = 0; i < nodes[cur].numNeighbors; i++) {
+            node neighbor = nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]];
+            if (nodes[cur].distance + 1 < neighbor.distance) {
+                nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]].distance = nodes[cur].distance + 1;
             }
         }
     }
 
-    exits[1].distance = 0;
+    // resetting stats
+    for (int i = 0; i < numNodes; i++) {
+        nodes[i].distance = 99999;
+        nodes[i].visited = false;
+    }
+
+    // dijkstra's from second exit
+    nodes[exitNodes[1]].distance = 1;
     nodesVisited = 0;
 
     while (nodesVisited < numNodes) {
-        node cur = findMinUnvisitedNode();
+        int cur = findMinUnvisitedNode();
 
-        cur.visited = true;
+        nodes[cur].visited = true;
         nodesVisited++;
 
-        for (int i = 0; i < cur.numNeighbors; i++) {
-            if (cur.distance + 1 < cur.neighbors[i].distance) {
-                cur.neighbors[i].distance = cur.distance + 1;
+        for (int i = 0; i < nodes[cur].numNeighbors; i++) {
+            node neighbor = nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]];
+            if (nodes[cur].distance + 1 < neighbor.distance) {
+                nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]].distance = nodes[cur].distance + 1;
             }
         }
     }
 
+
+    // finding max distance shortest path
     int maxDistance = -1;
     for (int i = 0; i < numNodes; i++) {
         if (nodes[i].distance > maxDistance)
@@ -176,16 +198,16 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    catalogNodesAndEdges();
-
     printInput();
+
+    catalogNodesAndEdges();
 
     solution = dijkstrasMax();
 
     // writing output
     ofstream fout("maze1.out");
     if (fout.is_open()) {
-        fout << solution;
+        fout << solution << "\n";
     } else cout << "error opening output file" << endl;
     fout.close();
 
