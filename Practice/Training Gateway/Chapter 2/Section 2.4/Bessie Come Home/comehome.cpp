@@ -30,14 +30,15 @@ int minDistance = 999999999;
 char minCow = '0';
 
 int findMinDistanceNode() {
-    int min = 1002;
+    int minNode = -1;
+    int minDistance = 1002;
     for (int i = 0; i < numNodes; i++) {
-        if (nodes[i].distance < min && !nodes[i].visited) {
-            min = i;
+        if (nodes[i].distance < minDistance && !nodes[i].visited) {
+            minNode = i;
         }
     }
 
-    return min;
+    return minNode;
 }
 
 void dijkstras() {
@@ -45,16 +46,21 @@ void dijkstras() {
     int numVisited = 0;
     while (numVisited < numNodes) {
         int cur = findMinDistanceNode();
-        cout << cur << endl;
+//        cout << nodes[cur].name << " " << nodes[cur].distance << endl;
 
         nodes[cur].visited = true;
         numVisited++;
 
         for (int i = 0; i < 26; i++) {
-            if (edges[cur][i] != 0) {
+            int curNum = tolower(nodes[cur].name) - 97;
+            if (edges[curNum][i] != 0) {
+                cout << edges[curNum][i] << endl;
+                cout << nodes[nameToNodeI[i]].name << " " << nodes[nameToNodeI[i]].distance << endl;
+                cout << "   " << nodes[cur].name << " " << nodes[cur].distance << endl;
                 // fix this
-                if (nodes[cur].distance + edges[cur][i] < nodes[nameToNodeI[i]].distance) {
-                    nodes[nameToNodeI[i]].distance = nodes[cur].distance + edges[cur][i];
+                if (nodes[cur].distance + edges[curNum][i] < nodes[nameToNodeI[i]].distance) {
+                    nodes[nameToNodeI[i]].distance = nodes[cur].distance + edges[curNum][i];
+
                 }
             }
         }
@@ -105,12 +111,19 @@ int main() {
         }
     }
 
+    for (int i = 0; i < 26; i++) {
+        for (int j = 0; j < 26; j++) {
+            cout << edges[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+
     dijkstras();
 
     // find minimum distance and associated cow
     for (int i = 0; i < numNodes; i++) {
-        cout << nodes[i].distance << endl;
-        if (nodes[i].distance < minDistance && i != barnIndex) {
+        if (nodes[i].distance < minDistance && i != barnIndex && cows[i]) {
             minDistance = nodes[i].distance;
             minCow = nodes[i].name;
         }
