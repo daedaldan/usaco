@@ -22,9 +22,10 @@ struct node {
 
 int W;
 int H;
-node nodes[100];
+node nodes[3801];
+int nodesMaxMinDistance[3800];
 int numNodes = 0;
-char input[201][201];
+string input[201][201];
 node exits[2];
 int numExits = 0;
 int exitNodes[2];
@@ -48,9 +49,9 @@ void catalogNodesAndEdges() {
             n.row = r;
             n.col = c;
             nodes[numNodes] = n;
-            input[r][c] = static_cast<char>(numNodes);
+            input[r][c] = to_string(numNodes);
             // cataloging edges
-            if (input[r-1][c] == ' ' && r-1 == 0) {
+            if (input[r-1][c] == " " && r-1 == 0) {
                 node exit;
                 exit.row = r-1;
                 exit.col = c;
@@ -58,12 +59,12 @@ void catalogNodesAndEdges() {
                 numExits++;
                 exitNodes[numExitNodes] = numNodes;
                 numExitNodes++;
-            } else if (input[r-1][c] == ' ') {
+            } else if (input[r-1][c] == " ") {
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r-2;
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c;
                 nodes[numNodes].numNeighbors++;
             }
-            if (input[r+1][c] == ' ' && r+1 == H*2) {
+            if (input[r+1][c] == " " && r+1 == H*2) {
                 node exit;
                 exit.row = r+1;
                 exit.col = c;
@@ -71,12 +72,12 @@ void catalogNodesAndEdges() {
                 numExits++;
                 exitNodes[numExitNodes] = numNodes;
                 numExitNodes++;
-            } else if (input[r+1][c] == ' ') {
+            } else if (input[r+1][c] == " ") {
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r+2;
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c;
                 nodes[numNodes].numNeighbors++;
             }
-            if (input[r][c-1] == ' ' && c-1 == 0) {
+            if (input[r][c-1] == " " && c-1 == 0) {
                 node exit;
                 exit.row = r;
                 exit.col = c-1;
@@ -84,24 +85,22 @@ void catalogNodesAndEdges() {
                 numExits++;
                 exitNodes[numExitNodes] = numNodes;
                 numExitNodes++;
-            } else if (input[r][c-1] == ' ') {
+            } else if (input[r][c-1] == " ") {
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r;
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c-2;
                 nodes[numNodes].numNeighbors++;
             }
-            if (input[r][c+1] == ' ' && c+1 == W*2) {
+            if (input[r][c+1] == " " && c+1 == W*2) {
                 node exit;
                 exit.row = r;
                 exit.col = c+1;
-                exits[numExits] = exit;
                 numExits++;
                 exitNodes[numExitNodes] = numNodes;
                 numExitNodes++;
-            } else if (input[r][c+1] == ' ') {
+            } else if (input[r][c+1] == " ") {
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][0] = r;
                 nodes[numNodes].neighbors[nodes[numNodes].numNeighbors][1] = c+2;
                 nodes[numNodes].numNeighbors++;
-                nodes[numNodes].distance = 1;
             }
             numNodes++;
         }
@@ -133,15 +132,16 @@ int dijkstrasMax() {
         nodesVisited++;
 
         for (int i = 0; i < nodes[cur].numNeighbors; i++) {
-            node neighbor = nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]];
+            node neighbor = nodes[stoi(input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]])];
             if (nodes[cur].distance + 1 < neighbor.distance) {
-                nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]].distance = nodes[cur].distance + 1;
+                nodes[stoi(input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]])].distance = nodes[cur].distance + 1;
             }
         }
     }
 
-    // resetting stats
+    // resetting stats and cataloging first set of distances
     for (int i = 0; i < numNodes; i++) {
+        nodesMaxMinDistance[i] = nodes[i].distance;
         nodes[i].distance = 99999;
         nodes[i].visited = false;
     }
@@ -157,19 +157,26 @@ int dijkstrasMax() {
         nodesVisited++;
 
         for (int i = 0; i < nodes[cur].numNeighbors; i++) {
-            node neighbor = nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]];
+            node neighbor = nodes[stoi(input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]])];
             if (nodes[cur].distance + 1 < neighbor.distance) {
-                nodes[input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]]].distance = nodes[cur].distance + 1;
+                nodes[stoi(input[nodes[cur].neighbors[i][0]][nodes[cur].neighbors[i][1]])].distance = nodes[cur].distance + 1;
             }
         }
+    }
+
+    // updating distances
+    for (int i = 0; i < numNodes; i++) {
+        if (nodes[i].distance < nodesMaxMinDistance[i])
+            nodesMaxMinDistance[i] = nodes[i].distance;
     }
 
 
     // finding max distance shortest path
     int maxDistance = -1;
     for (int i = 0; i < numNodes; i++) {
-        if (nodes[i].distance > maxDistance)
-            maxDistance = nodes[i].distance;
+        if (nodesMaxMinDistance[i] > maxDistance) {
+            maxDistance = nodesMaxMinDistance[i];
+        }
     }
 
     return maxDistance;
@@ -181,14 +188,14 @@ int main() {
     if (fin.is_open()) {
         fin >> W;
         fin >> H;
-        fin >> noskipws;
-        char unit;
+        char unitChar;
         int r = 0;
         while (r < H*2+1) {
             int c = 0;
             while (c < W*2+1) {
-                fin >> unit;
-                if (unit != '\n' && unit != '\r') {
+                fin.get(unitChar);
+                string unit (1, unitChar);
+                if (unit != "\n" && unit != "\r") {
                     input[r][c] = unit;
                     c++;
                 }
@@ -198,7 +205,7 @@ int main() {
     } else cout << "error opening input file" << endl;
     fin.close();
 
-    printInput();
+//    printInput();
 
     catalogNodesAndEdges();
 
