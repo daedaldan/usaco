@@ -14,15 +14,15 @@ using namespace std;
 
 struct node {
     char name;
-    int distance = 1001;
+    int distance = 520001;
     bool visited = false;
 };
 
 int P;
-int edges[26][26];
-bool pastures[26];
-bool cows[26];
-node nodes[26];
+int edges[58][58];
+bool pastures[58];
+bool cows[58];
+node nodes[58];
 int numNodes = 0;
 map<int, int> nameToNodeI;
 int barnIndex = -1;
@@ -31,10 +31,11 @@ char minCow = '0';
 
 int findMinDistanceNode() {
     int minNode = -1;
-    int minDistance = 1002;
+    int minDistance = 520002;
     for (int i = 0; i < numNodes; i++) {
         if (nodes[i].distance < minDistance && !nodes[i].visited) {
             minNode = i;
+            minDistance = nodes[i].distance;
         }
     }
 
@@ -46,21 +47,15 @@ void dijkstras() {
     int numVisited = 0;
     while (numVisited < numNodes) {
         int cur = findMinDistanceNode();
-//        cout << nodes[cur].name << " " << nodes[cur].distance << endl;
 
         nodes[cur].visited = true;
         numVisited++;
 
-        for (int i = 0; i < 26; i++) {
-            int curNum = tolower(nodes[cur].name) - 97;
+        for (int i = 0; i < 58; i++) {
+            int curNum = nodes[cur].name - 65;
             if (edges[curNum][i] != 0) {
-                cout << edges[curNum][i] << endl;
-                cout << nodes[nameToNodeI[i]].name << " " << nodes[nameToNodeI[i]].distance << endl;
-                cout << "   " << nodes[cur].name << " " << nodes[cur].distance << endl;
-                // fix this
                 if (nodes[cur].distance + edges[curNum][i] < nodes[nameToNodeI[i]].distance) {
                     nodes[nameToNodeI[i]].distance = nodes[cur].distance + edges[curNum][i];
-
                 }
             }
         }
@@ -79,11 +74,13 @@ int main() {
             fin >> start;
             fin >> end;
             fin >> weight;
-            edges[tolower(start)-97][tolower(end)-97] = weight;
-            edges[tolower(end)-97][tolower(start)-97] = weight;
+            if (weight < edges[start-65][end-65] || edges[start-65][end-65] == 0)
+                edges[start-65][end-65] = weight;
+            if (weight < edges[end-65][start-65] || edges[end-65][start-65] == 0)
+                edges[end-65][start-65] = weight;
             // remembering pastures
-            pastures[tolower(start)-97] = true;
-            pastures[tolower(end)-97] = true;
+            pastures[start-65] = true;
+            pastures[end-65] = true;
             // remembering which pastures have cows
             if (start < 91) {
                 cows[start-65] = true;
@@ -96,13 +93,10 @@ int main() {
     fin.close();
 
     // converting pastures to nodes
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < 58; i++) {
         if (pastures[i]) {
             node n;
-            if (cows[i])
-                n.name = static_cast<char>(i+65);
-            else
-                n.name = static_cast<char>(i+97);
+            n.name = static_cast<char>(i+65);
             nodes[numNodes] = n;
             if (i == 25)
                 barnIndex = numNodes;
@@ -111,19 +105,11 @@ int main() {
         }
     }
 
-    for (int i = 0; i < 26; i++) {
-        for (int j = 0; j < 26; j++) {
-            cout << edges[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-
     dijkstras();
 
     // find minimum distance and associated cow
     for (int i = 0; i < numNodes; i++) {
-        if (nodes[i].distance < minDistance && i != barnIndex && cows[i]) {
+        if (nodes[i].distance < minDistance && i != barnIndex && cows[nodes[i].name-65]) {
             minDistance = nodes[i].distance;
             minCow = nodes[i].name;
         }
