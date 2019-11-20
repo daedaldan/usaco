@@ -16,8 +16,8 @@ struct direction {
     int col;
 };
 
-int farmerVisited[10][10];
-bool cowVisited[10][10];
+int farmerVisited[10][10][4];
+int cowVisited[10][10][4];
 char grid[10][10];
 int farmerDirection = 0;
 int cowDirection = 0;
@@ -124,7 +124,7 @@ int main() {
         }
 
         // check if cycle has occured
-        if (farmerVisited[farmerLocation[0]][farmerLocation[1]] > 1 && cowVisited[cowLocation[0]][cowLocation[1]] > 1) {
+        if (farmerVisited[farmerLocation[0]][farmerLocation[1]][farmerDirection] > 2 && cowVisited[cowLocation[0]][cowLocation[1]][cowDirection] > 2) {
             cout << "cycle has occurred at minute " << minutes << " with farmer and cow at: " << endl;
             cout << "   farmer: " << farmerLocation[0] << ", " << farmerLocation[1] << endl;
             cout << "   cow: " << cowLocation[0] << ", " << cowLocation[1] << endl;
@@ -137,7 +137,7 @@ int main() {
             rotate('F');
         } else {
             // mark current spot as visited
-            farmerVisited[farmerLocation[0]][farmerLocation[1]]++;
+            farmerVisited[farmerLocation[0]][farmerLocation[1]][farmerDirection]++;
             // move farmer in appropriate direction and update location
             direction d = directionXY(farmerDirection);
             int i = cowDirection;
@@ -152,7 +152,7 @@ int main() {
             rotate('C');
         } else {
             // mark current spot as visited
-            cowVisited[cowLocation[0]][cowLocation[1]]++;
+            cowVisited[cowLocation[0]][cowLocation[1]][cowDirection]++;
             // move cow in appropriate direction and and update location
             direction d = directionXY(cowDirection);
             grid[cowLocation[0]+d.row][cowLocation[1]+d.col] = 'C';
