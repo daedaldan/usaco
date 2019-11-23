@@ -29,26 +29,6 @@ int main() {
         }
     } else cout << "error opening input file" << endl;
     fin.close();
-    // slow (incorrect) algorithm
-//    int maxScoreSlow = -1;
-//    int bestKSlow = -1;
-//    for (int k = 1; k <= N-2; k++) {
-//        int count = 0;
-//        int lowest = 1000000000;
-//        int total = 0;
-//        for (int i = k; i < N; i++) {
-//            count++;
-//            total += scores[i];
-//            if (scores[i] < lowest)
-//                lowest = scores[i];
-//        }
-//        if ((total-lowest)/(count-1) >= maxScoreSlow) {
-//            maxScoreSlow = (total-lowest)/(count-1);
-//            bestKSlow = k;
-//        }
-//        cout << k << " " << (total-lowest)/(count-1) << endl;
-//    }
-//    cout << bestKSlow << endl;
 
     // find lowest score for each interval
     int lowestInInterval = 1000000000;
@@ -69,7 +49,6 @@ int main() {
             bestKs[numBestKs] = k;
             numBestKs++;
         }
-//        cout << k << " " << intervalScoreAverage << " " << lowestScores[k] << endl;
     }
 
     // writing output
