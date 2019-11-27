@@ -40,7 +40,7 @@ int main() {
     }
 
     for (int k = 1; k <= N-2; k++) {
-        int intervalScoreAverage = (scoreSums[N-1] - scoreSums[k-1] - lowestScores[k]) / (N-k-1);
+        double intervalScoreAverage = (scoreSums[N-1] - scoreSums[k-1] - lowestScores[k]) / static_cast<double>(N-k-1);
         if (intervalScoreAverage > highestAverage) {
             highestAverage = intervalScoreAverage;
             bestKs[0] = k;

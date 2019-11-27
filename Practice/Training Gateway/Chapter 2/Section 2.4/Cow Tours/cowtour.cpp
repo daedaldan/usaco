@@ -15,7 +15,6 @@ struct pasture {
     int x;
     int y;
     int index;
-    int componentNum = -1;
     bool visited = false;
 };
 
@@ -72,10 +71,19 @@ void floodFill() {
 double findDiameter(int fieldPastures[], int numPastures) {
     sort(fieldPastures, fieldPastures+numPastures);
     double dist[150][150];
+    if (edges[2][6]) {
+        for (int i = 0; i < numPastures; i++) {
+            cout << fieldPastures[i] << ": " << pastures[fieldPastures[i]].x << ", " << pastures[fieldPastures[i]].y << endl;
+        }
+    }
+
     // start with all single edge paths
     for (int i = 0; i < numPastures; i++) {
         for (int j = 0; j < numPastures; j++) {
             if (edges[fieldPastures[i]][fieldPastures[j]] == 1) {
+                if ((fieldPastures[i] == 2 && fieldPastures[j] == 6) || (fieldPastures[i] == 6 && fieldPastures[j] == 2)) {
+                    cout << "distance between C and G: " << distance(pastures[fieldPastures[i]], pastures[fieldPastures[j]]) << endl;
+                }
                 dist[fieldPastures[i]][fieldPastures[j]] = distance(pastures[fieldPastures[i]], pastures[fieldPastures[j]]);
             } else {
                 dist[fieldPastures[i]][fieldPastures[j]] = 1000000000;
@@ -91,6 +99,9 @@ double findDiameter(int fieldPastures[], int numPastures) {
                  && edges[fieldPastures[j]][fieldPastures[k]] == 1) {
                     if (dist[i][k] + dist[k][j] < dist[i][j]) {
                         dist[i][j] = dist[i][k] + dist[k][j];
+                        if (edges[2][6]) {
+                            cout << i << " " << j << " " << dist[i][j] << endl;
+                        }
                     }
                 }
             }
@@ -101,7 +112,9 @@ double findDiameter(int fieldPastures[], int numPastures) {
     // find maximum shortest path
     for (int i = 0; i < numPastures; i++) {
         for (int j = 0; j < numPastures; j++) {
-            if (dist[i][j] > distance && dist[i][j] != 1000000000) {
+            if (edges[2][6])
+                cout << dist[i][j] << endl;
+            if (dist[i][j] > distance && dist[i][j] != 1000000000 && i != j) {
                 distance = dist[i][j];
             }
         }
@@ -160,7 +173,6 @@ int main() {
                     // check the diameter of the new field
                     double diameter = findDiameter(pasturesInField, numPasturesInField);
                     // if new diameter is smaller than existing minimum, record it;
-                    cout << diameter << endl;
                     if (diameter < minDiameter) {
                         minDiameter = diameter;
                         minPastureA = fields[i].pastures[p1];
