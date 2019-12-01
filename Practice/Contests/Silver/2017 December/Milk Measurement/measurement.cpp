@@ -19,15 +19,15 @@ struct change {
 };
 
 struct myDisplay {
-    int myDisplay[1000000];
+    int myDisplay[1000001];
     int numCows = 0;
 };
 
 int N, G;
-change changes[100000];
+change changes[100001];
 unordered_map<int, cow> cows;
 unordered_set<int> cowIDs;
-int display[1000000];
+int display[1000001];
 int numCowsOnDisplay;
 int highestProduction;
 int displayChanges = 0;
@@ -54,7 +54,7 @@ myDisplay newTop() {
             newDisplay[0] = currentID;
             numNewCows = 1;
             topProduction = cows[currentID].production;
-        } else if (cows[currentID].production == topProduction && onDisplay(currentID, newDisplay, numNewCows) == -1) {
+        } else if (cows[currentID].production == topProduction && onDisplay(currentID, newDisplay, numNewCows) == -1 && currentID != display[0]) {
             // cow's new production now matches current highest
             newDisplay[numNewCows] = currentID;
             numNewCows++;
@@ -85,6 +85,15 @@ int main() {
             changes[i] = c;
             cowIDs.insert(c.id);
         }
+
+        // note last paragraph of problem description
+        change c;
+        c.day = 1;
+        c.id = 1000000001;
+        c.change = 0;
+        changes[N] = c;
+        cowIDs.insert(c.id);
+
         numCowsOnDisplay = cowIDs.size();
         int i = 0;
         for (auto itr = cowIDs.begin(); itr != cowIDs.end(); ++itr) {
@@ -106,43 +115,45 @@ int main() {
         // update cow
         int currentID = changes[i].id;
         cows[currentID].production += changes[i].change;
+        int onDisplayIndex = onDisplay(currentID, display, numCowsOnDisplay);
         // see if change to wall must be made
         if (cows[currentID].production > highestProduction) {
             // cow's new production is higher than current highest
+            if (onDisplayIndex == -1 || numCowsOnDisplay > 1)
+                displayChanges++;
             display[0] = currentID;
             numCowsOnDisplay = 1;
             highestProduction = cows[currentID].production;
-            displayChanges++;
         } else if (cows[currentID].production == highestProduction &&
-                   onDisplay(currentID, display, numCowsOnDisplay) == -1) {
+                   onDisplayIndex == -1) {
             // cow's new production now matches current highest
             display[numCowsOnDisplay] = changes[i].id;
             numCowsOnDisplay++;
             displayChanges++;
         } else if (changes[i].change < 0) {
-            // cow's new production is less than current highest
-            int onDisplayIndex = onDisplay(currentID, display, numCowsOnDisplay);
-            // cow is no longer on display
-            if (onDisplayIndex != -1 && numCowsOnDisplay > 1) {
-                // remove cow from display
-                for (int i = onDisplayIndex; i < numCowsOnDisplay; i++) {
-                    display[i] = display[i + 1];
-                }
-                numCowsOnDisplay--;
-                displayChanges++;
-            } else if (numCowsOnDisplay == 1) { // other cows are now on display
-                myDisplay d = newTop();
-                cout << "here" << endl;
-                if (d.numCows != 0) {
-                    for (int i = 0; i < d.numCows; i++) {
-                        display[i] = d.myDisplay[i];
-                        numCowsOnDisplay = d.numCows;
+            // cow was on display before change
+            if (onDisplayIndex != -1) {
+                // cow is no longer on display
+                if (numCowsOnDisplay > 1) {
+                    // remove cow from display
+                    for (int i = onDisplayIndex; i < numCowsOnDisplay; i++) {
+                        display[i] = display[i + 1];
                     }
+                    numCowsOnDisplay--;
                     displayChanges++;
+                } else if (numCowsOnDisplay == 1) { // other cows are now on display
+                    myDisplay d = newTop();
+                    if (d.numCows != 0) {
+                        for (int i = 0; i < d.numCows; i++) {
+                            display[i] = d.myDisplay[i];
+                            numCowsOnDisplay = d.numCows;
+                        }
+                        displayChanges++;
+                    }
+                    highestProduction = cows[display[0]].production;
                 }
             }
         }
-        cout << currentID << " " << changes[i].change << " " << displayChanges << endl;
     }
 
     // writing output
