@@ -1,14 +1,15 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <queue>
 
 using namespace std;
 
 int N;
 int moves[100001];
-int cows[100001];
-int zeros[100001];
-int numZeros = 0;
+int shuffled[100001];
+queue<int> deadPosition;
+int numZeroes = 0;
 
 int main() {
     // reading input
@@ -18,28 +19,35 @@ int main() {
         for (int i = 1; i <= N; i++) {
             fin >> moves[i];
         }
-        for (int i = 1; i <= N; i++) {
-            cows[i] = 1;
-        }
     } else cout << "error opening input file" << endl;
     fin.close();
 
     for (int i = 1; i <= N; i++) {
-        cows[i]--;
-        cows[moves[i]] += 1;
-        if (cows[i] == 0)
-            zeros[i] = 1;
+        shuffled[moves[i]] += 1;
     }
 
     for (int i = 1; i <= N; i++) {
-        if (zeros[i] == 1)
-            numZeros++;
+        if (shuffled[i] == 0) {
+            deadPosition.push(i);
+            numZeroes++;
+        }
     }
+
+    while (!deadPosition.empty()) {
+        int current = deadPosition.front();
+        deadPosition.pop();
+        shuffled[moves[current]] -= 1;
+        if (shuffled[moves[current]] == 0) {
+            deadPosition.push(moves[current]);
+            numZeroes++;
+        }
+    }
+
 
     // writing output
     ofstream fout("shuffle.out");
     if (fout.is_open()) {
-        fout << numZeros << endl;
+        fout << N - numZeroes << "\n";
     } else cout << "error opening output file" << endl;
     fout.close();
 
