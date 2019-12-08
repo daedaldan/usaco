@@ -8,21 +8,21 @@
 using namespace std;
 
 struct cow {
-    int arrival;
-    int sampling;
-    int seniority;
+    long long arrival;
+    long long sampling;
+    long long seniority;
     bool operator<(const cow & rhs) const {
         return seniority < rhs.seniority;
     }
 };
 
-int N;
+long long N;
 cow cows[100000];
 priority_queue<cow> waiting;
-int maxWaitingTime = -1;
+long long maxWaitingTime = -1;
 bool firstCowArrived = false;
 cow samplingCow;
-int samplingEnd = -1;
+long long samplingEnd = -1;
 
 bool arrivalCmp (cow a, cow b) {
     return a.arrival < b.arrival;
@@ -33,7 +33,7 @@ int main() {
     ifstream fin("convention2.in");
     if (fin.is_open()) {
         fin >> N;
-        for (int i = 0; i < N; i++) {
+        for (long long i = 0; i < N; i++) {
             cow c;
             fin >> c.arrival;
             fin >> c.sampling;
@@ -46,42 +46,15 @@ int main() {
     sort(cows, cows+N, arrivalCmp);
     samplingEnd = cows[0].arrival;
 
-//    for (int i = 0; i < N; i++) {
-//        bool arrived = false;
-//        if (!(!waiting.empty() && cows[i].arrival > samplingEnd)) {
-//            cout << "ARRIVAL at " << cows[i].arrival << " with seniority " << cows[i].seniority << endl;
-//            waiting.push(cows[i]);
-//            arrived = true;
-//        }
-//
-//        if (cows[i].arrival >= samplingEnd || cows[i].arrival == samplingCow.arrival) {
-//            samplingCow = waiting.top();
-//            cout << "SAMPLING for cow that arrived at: " << samplingCow.arrival << " with seniority " << samplingCow.seniority << " who will sample for " << samplingCow.sampling << endl;
-//            int waitingTime = samplingEnd - samplingCow.arrival;
-//            cout << "    this cow waited for " << waitingTime << endl;
-//            if (waitingTime > maxWaitingTime) {
-//                maxWaitingTime = waitingTime;
-//            }
-//            samplingEnd = samplingEnd + samplingCow.sampling;
-//            waiting.pop();
-//            if (samplingEnd < 0)
-//                cout << "    sampling will end at " << 0 << endl;
-//            else
-//                cout << "    sampling will end at " << samplingEnd << endl;
-//        }
-//
-//        if (!arrived)
-//            i--;
-//    }
-
     waiting.push(cows[0]);
     int index = 1;
     while (!waiting.empty()) {
-        if (!waiting.empty() && cows[index-1].arrival > samplingEnd) {
+        cout << waiting.size() << endl;
+        if (!waiting.empty() && (cows[index].arrival > samplingEnd || index == N)) {
             // new cow samples grass
             samplingCow = waiting.top();
             cout << "SAMPLING for cow that arrived at: " << samplingCow.arrival << " with seniority " << samplingCow.seniority << " who will sample for " << samplingCow.sampling << endl;
-            int waitingTime = samplingEnd - samplingCow.arrival;
+            long long waitingTime = samplingEnd - samplingCow.arrival;
             cout << "    this cow waited for " << waitingTime << endl;
             if (waitingTime > maxWaitingTime) {
                 maxWaitingTime = waitingTime;
