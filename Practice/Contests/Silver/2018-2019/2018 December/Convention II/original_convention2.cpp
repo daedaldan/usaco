@@ -68,7 +68,7 @@ int main() {
         }
 
         // another cow arrives
-        if ((waiting.empty() || cows[index].arrival <= samplingEnd) && index < N) {
+        while ((waiting.empty() || cows[index].arrival <= samplingEnd) && index < N) {
             cout << "ARRIVAL at " << cows[index].arrival << " with seniority " << cows[index].seniority << endl;
             waiting.push(cows[index]);
             index++;
