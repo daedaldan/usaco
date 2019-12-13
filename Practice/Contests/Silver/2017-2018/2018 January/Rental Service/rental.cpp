@@ -53,7 +53,7 @@ int main() {
         while (index < M || production[i] > 0) {
             if (production[i] > sell[index].gallons) {
                 production[i] -= sell[index].gallons;
-                maxProfit[i+1] 
+                maxProfit[i+1]
                 sell[index].gallons = 0;
 
             }
