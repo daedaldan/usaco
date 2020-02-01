@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
@@ -49,7 +51,33 @@ void dfs(int source, int current, int min) {
     }
 }
 
+void randomInput() {
+    ofstream fout("mootube.in");
+    if (fout.is_open()) {
+        srand(time(NULL));
+        int randN = (rand() % 10 + 1), randQ = (rand() % 10 + 1);
+        fout << randN << " " << randQ << "\n";
+        for (int i = 0; i < randN; i++) {
+            unordered_map<int, int> used;
+            for (int j = 1; j <= N; j++)
+                used[j] = 0;
+            int a = -1, b = -1;
+            while (!(a > 0 && a <= randN) && !(b > 0 && b <= randN) && (used[a] < 2) && (used[b] < 2)) {
+                a = (rand() % 10 + 1);
+                b = (rand() % 10 + 1);
+            }
+            fout << a << " " << b << " " << (rand() % 10 + 1) << "\n";
+            used[a] += 1;
+            used[b] += 1;
+        }
+        for (int i = 0; i < randQ; i++) {
+            fout << (rand() % 10 + 1) << " " << (rand() % 10 + 1) << "\n";
+        }
+    } else cout << "error in opening random input file" << endl;
+}
+
 int main() {
+//    randomInput();
     // reading input
     ifstream fin("mootube.in");
     if (fin.is_open()) {
@@ -87,8 +115,9 @@ int main() {
         int video = questions[i].video;
         int k = questions[i].k;
         for (int j = 1; j <= N; j++) {
-            if (video != j && allKs[video][j] >= k)
+            if (video != j && allKs[video][j] >= k) {
                 numVideos++;
+            }
         }
         answers[i] = numVideos;
     }
