@@ -46,7 +46,7 @@ void dfs(int source, int current, int min) {
             allKs[source][videos[current].neighbors[i].neighbor] = min;
 
             dfs(source, videos[current].neighbors[i].neighbor, min);
-            min = originalMin;
+//            min = originalMin;
         }
     }
 }
