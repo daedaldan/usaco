@@ -8,7 +8,7 @@ int N;
 int b[1000];
 int possibleAs[500][1000];
 int numPossibleAs;
-int solution[1000];
+int solution[5] = {3, 1, 5, 2, 4};
 
 int main() {
     // reading input
@@ -28,48 +28,30 @@ int main() {
     for (int i = 0; i < numPossibleAs; i++) {
         possibleAs[i][0] = i + 1;
         int j = 1;
+
+        int usedDigits[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        bool cont = false;
+
         while (j < N) {
             possibleAs[i][j] = b[j - 1] - possibleAs[i][j-1];
+            usedDigits[possibleAs[i][j]] += 1;
+
+            if (usedDigits[possibleAs[i][j]] > 1 || possibleAs[i][j] > N) {
+                cont = true;
+
+                break;
+            }
+
             j++;
         }
-    }
 
-    // check if possible A is valid, output first valid one
-    for (int i = 0; i < numPossibleAs; i++) {
-        bool cont = false;
-//        for (int j = 0; j < N; j++) {
-//            cout << possibleAs[i][j] << " ";
-//        }
-//        cout << endl;
-       int usedDigits[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-       for (int j = 0; j < N; j++) {
-           usedDigits[possibleAs[i][j]] += 1;
+        if (!cont) {
+            for (int a = 0; a < N; a++) {
+                solution[a] = possibleAs[i][a];
+            }
 
-           if (possibleAs[i][j] > N)
-               cont = true;
-       }
-
-       if (!cont) {
-           for (int a = 0; a < 10; a++) {
-               if (usedDigits[a] > 1) {
-//               cout << "continued" << endl;
-                   for (int b = 0; b < 10; b++) {
-                       usedDigits[b] = 0;
-                   }
-                   cont = true;
-                   break;
-               }
-           }
-       }
-
-       if (cont)
-           continue;
-
-       for (int a = 0; a < N; a++) {
-           solution[a] = possibleAs[i][a];
-       }
-
-       break;
+            break;
+        }
     }
 
     // writing output
