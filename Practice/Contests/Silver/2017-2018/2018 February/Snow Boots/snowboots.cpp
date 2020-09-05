@@ -5,29 +5,44 @@
 
 using namespace std;
 
-int N, B;
-int f[250], s[250], d[250];
-int best = 250;
+struct boot {
+    int depth;
+    int step;
+};
 
-void solve(int pair, int tile) {
-    // update best and return if at end of path
-    if (tile >= N - 1) {
-        cout << pair << endl;
-        best = min(pair, best);
+int N, B;
+int snow[250];
+boot boots[250];
+int best = 9999;
+int beenthere[250][250];
+
+void solve(int t, int b) {
+    // check if have visited this state before
+    if (beenthere[t][b])
         return;
+    beenthere[t][b] = 1;
+
+    // if done
+    if (t == N - 1) {
+        if (b < best) {
+            best = b;
+            return;
+        }
     }
 
-    // try going forward
-    for (int i = tile + 1; i <= tile + d[pair]; i++)
-        if (f[i] <= s[pair] && i < N)
-            solve(pair, i);
-        else
-            break;
+    // try walking forward
+    for (int i = 1; i <= boots[b].step; i++) {
+        if (t + i < N && snow[t + i] <= boots[b].depth) {
+            solve(t + i, b);
+        }
+    }
 
     // try switching boots
-    for (int i = pair + 1; i < B; i++)
-        if (f[tile] <= s[i])
-            solve(i, tile);
+    for (int i = b + 1; i < B; i++) {
+        if (boots[i].depth >= snow[t]) {
+            solve(t, i);
+        }
+    }
 }
 
 int main() {
@@ -35,10 +50,12 @@ int main() {
     ifstream fin("snowboots.in");
     if (fin.is_open()) {
         fin >> N >> B;
-        for (int i = 0; i < N; i++)
-            fin >> f[i];
-        for (int i = 0; i < B; i++)
-            fin >> s[i] >> d[i];
+        for (int i = 0; i < N; i++) {
+            fin >> snow[i];
+        }
+        for (int i = 0; i < B; i++) {
+            fin >> boots[i].depth >> boots[i].step;
+        }
     } else cout << "error opening input file" << endl;
     fin.close();
 
